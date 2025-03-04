@@ -412,9 +412,6 @@ def write_treedatalikelihood_block(x, parameters):
 
 
 
-
-
-
 taxa, seq_list = read_fasta('USUV_2025Feb10_alldata_aligned_formatted_noFLI_NFLG.fasta_subsample1.fasta')
 dates = parse_dates(taxa)
 date_decimal, precision = format_dates(dates)
@@ -427,8 +424,8 @@ parms = {
 }
 
 root = etree.Element('beast', version='1.0')
-test_3 = write_skygridlikelihood_block(root, sg_parms)
+testing = write_scaleoperator_block(root, parameter_name='kappa', weight='1', scalefactor='0.75')
 
-xml_string = etree.tostring(test_3, pretty_print=True, encoding="utf-8").decode()
+xml_string = etree.tostring(testing, pretty_print=True, encoding="utf-8").decode()
 
 print(xml_string)
