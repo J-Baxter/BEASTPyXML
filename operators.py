@@ -18,10 +18,10 @@ def write_scaleoperator_block(x, parameter_name,**kwargs):
               "df": df}
 
     # Filter out missing arguments
-    clean_attribute = {key: value for (key, value) in attributes.items() if value is not None}
+    clean_attributes = {key: value for (key, value) in attributes.items() if value is not None}
 
     # Write Attribute
-    tmp = etree.SubElement(x, 'scaleOperator', clean_attribute)
+    tmp = etree.SubElement(x, 'scaleOperator', clean_attributes)
     etree.SubElement(tmp, 'parameter', idref=parameter_name)
 
     return x
@@ -37,10 +37,10 @@ def write_uniformoperator_block(x, parameter_name, **kwargs):
                   "upper": upper}
 
     # Filter out missing arguments
-    clean_attribute = {key: value for (key, value) in attributes.items() if value is not None}
+    clean_attributes = {key: value for (key, value) in attributes.items() if value is not None}
 
     # Write attribute
-    tmp = etree.SubElement(x, 'uniformOperator', clean_attribute)
+    tmp = etree.SubElement(x, 'uniformOperator', clean_attributes)
     etree.SubElement(tmp, 'parameter', idref=parameter_name)
 
     return x
@@ -58,10 +58,10 @@ def write_uniformintegeroperator_block(x, parameter_name, **kwargs):
                   "count": count}
 
     # Filter out missing arguments
-    clean_attribute = {key: value for (key, value) in attributes.items() if value is not None}
+    clean_attributes = {key: value for (key, value) in attributes.items() if value is not None}
 
     # Write attribute
-    tmp = etree.SubElement(x, 'uniformIntegerOperator', clean_attribute)
+    tmp = etree.SubElement(x, 'uniformIntegerOperator', clean_attributes)
     etree.SubElement(tmp, 'parameter', idref=parameter_name)
 
     return x
@@ -81,10 +81,10 @@ def write_deltaexchange_block(x, parameter_name, **kwargs):
                   "integer": integer}
 
     # Filter out missing arguments
-    clean_attribute = {key: value for (key, value) in attributes.items() if value is not None}
+    clean_attributes = {key: value for (key, value) in attributes.items() if value is not None}
 
     # Write Attribute
-    tmp = etree.SubElement(x, 'deltaExchange', clean_attribute)
+    tmp = etree.SubElement(x, 'deltaExchange', clean_attributes)
     etree.SubElement(tmp, 'parameter', idref=parameter_name)
 
     return x
@@ -96,10 +96,10 @@ def write_narrowexchange_block(x, **kwargs):
     attributes = {"weight": weight}
 
     # Filter out missing arguments
-    clean_attribute = {key: value for (key, value) in attributes.items() if value is not None}
+    clean_attributes = {key: value for (key, value) in attributes.items() if value is not None}
 
     # Write Attribute
-    tmp = etree.SubElement(x, 'narrowExchange', clean_attribute)
+    tmp = etree.SubElement(x, 'narrowExchange', clean_attributes)
     etree.SubElement(tmp, 'treeModel', idref='treeModel')
 
     return x
@@ -111,10 +111,10 @@ def write_wideexchange_block(x, **kwargs):
     attributes = {"weight": weight}
 
     # Filter out missing arguments
-    clean_attribute = {key: value for (key, value) in attributes.items() if value is not None}
+    clean_attributes = {key: value for (key, value) in attributes.items() if value is not None}
 
     # Write Attribute
-    tmp = etree.SubElement(x, 'wideExchange', clean_attribute)
+    tmp = etree.SubElement(x, 'wideExchange', clean_attributes)
     etree.SubElement(tmp, 'treeModel', idref='treeModel')
 
     return x
@@ -130,10 +130,10 @@ def write_updownoperator_block(x, up_parameter, down_parameter, **kwargs):
                   "autoOptimize": auto_optimize}
 
     # Filter out missing arguments
-    clean_attribute = {key: value for (key, value) in attributes.items() if value is not None}
+    clean_attributes = {key: value for (key, value) in attributes.items() if value is not None}
 
     # Write Attribute
-    tmp = etree.SubElement(x, 'upDownOperator', clean_attribute)
+    tmp = etree.SubElement(x, 'upDownOperator', clean_attributes)
 
     up = etree.SubElement(tmp, 'up')
     etree.SubElement(up, 'parameter', idref=up_parameter)
@@ -162,10 +162,10 @@ def write_subtreeslide_block(x, **kwargs):
                   "gaussian": gaussian}
 
     # Filter out missing arguments
-    clean_attribute = {key: value for (key, value) in attributes.items() if value is not None}
+    clean_attributes = {key: value for (key, value) in attributes.items() if value is not None}
 
     # Write Attribute
-    tmp = etree.SubElement(x, 'subtreeSlide', clean_attribute)
+    tmp = etree.SubElement(x, 'subtreeSlide', clean_attributes)
     etree.SubElement(tmp, 'treeModel', idref='treeModel')
 
     return x
@@ -176,10 +176,10 @@ def write_wilsonbalding_block(x, **kwargs):
     attributes = {"weight": weight}
 
     # Filter out missing arguments
-    clean_attribute = {key: value for (key, value) in attributes.items() if value is not None}
+    clean_attributes = {key: value for (key, value) in attributes.items() if value is not None}
 
     # Write Attribute
-    tmp = etree.SubElement(x, 'wilsonBalding', clean_attribute)
+    tmp = etree.SubElement(x, 'wilsonBalding', clean_attributes)
     etree.SubElement(tmp, 'treeModel', idref='treeModel')
 
     return x
@@ -195,10 +195,10 @@ def write_swapoperator_block(x, parameter_name, **kwargs):
                   "autoOptimize": auto_optimize}
 
     # Filter out missing arguments
-    clean_attribute = {key: value for (key, value) in attributes.items() if value is not None}
+    clean_attributes = {key: value for (key, value) in attributes.items() if value is not None}
 
     # Write Attribute
-    tmp = etree.SubElement(x, 'swapOperator', clean_attribute)
+    tmp = etree.SubElement(x, 'swapOperator', clean_attributes)
     etree.SubElement(tmp, 'parameter', idref=parameter_name)
 
     return x
@@ -214,10 +214,10 @@ def write_gmrfupdateroperator_block(x, **kwargs):
                   "scaleFactor": scale_factor}
 
     # Filter out missing arguments
-    clean_attribute = {key: value for (key, value) in attributes.items() if value is not None}
+    clean_attributes = {key: value for (key, value) in attributes.items() if value is not None}
 
     # Write Attribute
-    tmp = etree.SubElement(x, 'gmrfGridBlockUpdateOperator', clean_attribute)
+    tmp = etree.SubElement(x, 'gmrfGridBlockUpdateOperator', clean_attributes)
     etree.SubElement(tmp, 'gmrfSkyrideLikelihood', idref='skyride')
 
     return x
