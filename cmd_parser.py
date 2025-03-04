@@ -1,5 +1,6 @@
 from WriteEddieShell.BEASTPyXML.block_functions import *
 from WriteEddieShell.BEASTPyXML.operators import *
+from WriteEddieShell.BEASTPyXML.mcmc import *
 
 
 filename = 'USUV_2025Feb10_alldata_aligned_formatted_noFLI_NFLG.fasta_subsample1.fasta'
@@ -17,7 +18,11 @@ args = {"skygrid_populationsize": '32', #integer
          'gamma_alpha': '0.5',
          'population_model': 'constant',
          'partitions': [[1,2],3],
-        'empirical_tree_distribution': None}
+        'empirical_tree_distribution': None,
+        'chain_length':'250000000',
+        'log_every':'25000',
+        'file_stem':'USUV_2025Feb10_alldata_aligned_formatted_noFLI_NFLG'}
+
 
 
 # Make base root of XML
@@ -86,9 +91,10 @@ test = write_treedatalikelihood_block(test, args)
 test = write_operator_block(test, args, date_precision, taxa)
 
 # MCMC
+test = write_mcmc(test, args, date_precision, taxa)
 
 # Report
-
+test = write_report(test)
 
 # Save to file
 xml_string = etree.tostring(test, pretty_print=True, encoding="utf-8").decode()
