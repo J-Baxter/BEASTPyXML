@@ -1,9 +1,6 @@
-import re
+from WriteEddieShell.BEASTPyXML.block_functions import *
+from WriteEddieShell.BEASTPyXML.operators import *
 
-from WriteEddieShell.BEASTPyXML.block_functions import write_taxa_block, write_alignment_block, write_patterns_block, \
-    write_treeprior_block, write_treemodel_block, write_treelengthstatistic_block, write_tmrcastatistic_block, \
-    write_coalescentlikelihood_block, write_hky_block, write_site_block, write_compound_block, \
-    write_skygridlikelihood_block, write_treedatalikelihood_block
 
 filename = 'USUV_2025Feb10_alldata_aligned_formatted_noFLI_NFLG.fasta_subsample1.fasta'
 
@@ -19,7 +16,8 @@ args = {"skygrid_populationsize": '32', #integer
          'gamma_categories': '4',
          'gamma_alpha': '0.5',
          'population_model': 'constant',
-         'partitions': [[1,2],3]}
+         'partitions': [[1,2],3],
+        'empirical_tree_distribution': None}
 
 
 # Make base root of XML
@@ -81,16 +79,18 @@ else:
 if args['partitions']:
     test = write_compound_block(test, args)
 
+# Likelihood of tree given sequence data
 test = write_treedatalikelihood_block(test, args)
 
+# Operators
+test = write_operator_block(test, args, date_precision, taxa)
+
+# MCMC
+
+# Report
+
+
+# Save to file
 xml_string = etree.tostring(test, pretty_print=True, encoding="utf-8").decode()
-
-b_xml = etree.tostring(test, pretty_print=True, encoding="utf-8")
-with open("test.xml", "wb") as f:
-    f.write(b_xml)
-
-xml_string = etree.tostring(root, pretty_print=True, encoding="utf-8").decode()
-
-# Save to a file
 with open("output.xml", "w", encoding="utf-8") as f:
     f.write(xml_string)
