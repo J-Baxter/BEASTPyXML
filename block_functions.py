@@ -123,7 +123,7 @@ def write_alignment_block(x, taxa, sequences):
 # Write initial patterns block
 def write_patterns_block(x, partition):
     if not partition:
-        tmp2 = etree.SubElement(x, 'patterns', attrib={"from": '1'}, strip="false")
+        tmp2 = etree.SubElement(x, 'patterns', id='patterns', attrib={"from": '1'}, strip="false")
         etree.SubElement(tmp2, 'alignment', idref='alignment')
 
     else:
@@ -285,6 +285,19 @@ def write_relaxedclock_block(x, parameters):
     return x
 
 
+def write_strictclock_block(x, parameters):
+    tmp = etree.SubElement(x, 'strictClockBranchRates', id="branchRates")
+    tmp2 = etree.SubElement(tmp, 'rate')
+    etree.SubElement(tmp2, "parameter", id='clock.rate', value='1.0')
+
+    tmp = etree.SubElement(x, 'rateStatistic', id='meanRate', name='meanRate', mode='mean', internal="true",
+                           external="true")
+    etree.SubElement(tmp, "treeModel", idref="treeModel")
+    etree.SubElement(tmp, "branchRates", idref="branchRates")
+
+    return x
+
+
 # HKY -remember we're passing partition outside the function:
 # if partition:
 #   for p in partition:
@@ -326,6 +339,41 @@ def write_hky_block(x, partition, parameters):
     return x
 
 
+def write_gtr_block(x, partition, parameters):
+    # Extract parameters
+    gtr_rates_value = parameters["gtr_rates_value"]
+    gtr_rates_dimension = parameters["gtr_rates_dimension"]
+
+    if not partition:
+        name = ''
+
+    else:
+        if isinstance(partition, list):
+            name = 'CP' + str(partition[0]) + '+' + str(partition[1]) + '.'
+        else:
+            name = 'CP' + str(partition) + '.'
+
+    tmp = etree.SubElement(x, 'gtrModel', id=name + 'gtr')
+
+    # Frequency block
+    if not x.findall('.//frequencies'):
+        tmp2 = etree.SubElement(tmp, 'frequencies')
+        tmp3 = etree.SubElement(tmp2, 'frequencyModel', dataType='nucleotide')
+        tmp4 = etree.SubElement(tmp3, 'frequencies')
+        etree.SubElement(tmp4, 'parameter', id='frequencies', value='0.25 0.25 0.25 0.25')
+    else:
+        tmp2 = etree.SubElement(tmp, 'frequencies')
+        tmp3 = etree.SubElement(tmp2, 'frequencyModel', dataType='nucleotide')
+        tmp4 = etree.SubElement(tmp3, 'frequencies')
+        etree.SubElement(tmp4, 'parameter', idref='frequencies')
+
+    # rates block
+    tmp2 = etree.SubElement(tmp, 'rates')
+    etree.SubElement(tmp2, 'parameter', id=name + 'gtr.rates', value=gtr_rates_value, dimension=gtr_rates_dimension, lower='0.0')
+
+    return x
+
+
 # Site model
 def write_site_block(x, partition, parameters):
     # Extract parameters
@@ -344,15 +392,21 @@ def write_site_block(x, partition, parameters):
             name = 'CP' + str(partition) + '.'
 
     # Link to substitution model
-    tmp = etree.SubElement(x, 'siteModel', id=name + 'siteModel')
+    tmp = etree.SubElement(x, 'siteModel', id=name+'siteModel')
     tmp2 = etree.SubElement(tmp, 'substitutionModel')
-    etree.SubElement(tmp2, substitution_model.upper()+'Model', idref=name+substitution_model)
-    tmp2 = etree.SubElement(tmp, 'relativeRate')
-    etree.SubElement(tmp2, 'parameter', id=name+'mu', value='1.0', lower='0.0')
+
+    if re.search('hky', substitution_model):
+        etree.SubElement(tmp2, substitution_model.upper()+'Model', idref=name+substitution_model)
+
+        tmp3 = etree.SubElement(tmp, 'relativeRate')
+        etree.SubElement(tmp3, 'parameter', id=name + 'mu', value='1.0', lower='0.0')
+
+    elif re.search('gtr', substitution_model):
+        etree.SubElement(tmp2, substitution_model + 'Model', idref=name + substitution_model)
 
     if gamma_categories and gamma_alpha:
-        tmp2 = etree.SubElement(tmp, 'gammaShape', gammaCategories=gamma_categories)
-        etree.SubElement(tmp2, 'parameter',  id=name+'alpha', value=gamma_alpha, lower='0.0')
+        tmp4 = etree.SubElement(tmp, 'gammaShape', gammaCategories=gamma_categories)
+        etree.SubElement(tmp4, 'parameter',  id=name+'alpha', value=gamma_alpha, lower='0.0')
 
     return x
 
@@ -407,25 +461,3 @@ def write_treedatalikelihood_block(x, parameters):
         etree.SubElement(tmp, 'discretizedBranchRates', idref="branchRates")
 
     return x
-
-
-
-
-
-taxa, seq_list = read_fasta('USUV_2025Feb10_alldata_aligned_formatted_noFLI_NFLG.fasta_subsample1.fasta')
-dates = parse_dates(taxa)
-date_decimal, precision = format_dates(dates)
-
-# arguments will be parsed to dictionary such as
-parms = {
-  "skygrid_populationsize": '32', #integer
-  "skygrid_gridpoints": '31.0',
-  'skygrid_cutoff':'8.0'
-}
-
-root = etree.Element('beast', version='1.0')
-testing = write_scaleoperator_block(root, parameter_name='kappa', weight='1', scalefactor='0.75')
-
-xml_string = etree.tostring(testing, pretty_print=True, encoding="utf-8").decode()
-
-print(xml_string)

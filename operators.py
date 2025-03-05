@@ -218,7 +218,21 @@ def write_gmrfupdateroperator_block(x, **kwargs):
 
     # Write Attribute
     tmp = etree.SubElement(x, 'gmrfGridBlockUpdateOperator', clean_attributes)
-    etree.SubElement(tmp, 'gmrfSkyrideLikelihood', idref='skyride')
+    etree.SubElement(tmp, 'gmrfSkyrideLikelihood', idref='skygrid')
+
+    return x
+
+def write_precisiongibbs_block(x, **kwargs):
+    weight = kwargs.get('weight', None)
+    attributes = {"weight": weight}
+
+    # Filter out missing arguments
+    clean_attributes = {key: value for (key, value) in attributes.items() if value is not None}
+
+    # Write Attribute
+    tmp = etree.SubElement(x, 'precisionGibbsOperator', clean_attributes)
+    etree.SubElement(tmp, 'multivariateTraitLikelihood', idref='location.traitLikelihood')
+    etree.SubElement(tmp, 'multivariateWishartPrior', idref="location.precisionPrior")
 
     return x
 
@@ -227,7 +241,7 @@ def write_operator_block(x, parameters, precision, taxa):
     tmp = etree.SubElement(x, 'operators', id='operators', optimizationSchedule='default')
 
     # HKY substitution model
-    if re.search(parameters['substitution_model'], 'hky'):
+    if re.search('hky', parameters['substitution_model']):
         if not parameters['partitions']:
             write_scaleoperator_block(tmp, 'kappa', scale_factor='0.75', weight='1')
         else:
@@ -238,13 +252,22 @@ def write_operator_block(x, parameters, precision, taxa):
                     name = 'CP' + str(partition) + '.'
 
                 write_scaleoperator_block(tmp, name+'kappa', scale_factor='0.75', weight='1')
-        write_deltaexchange_block(tmp, 'allMus', delta='0.01', parameter_weights="6870 3435", weight="3")
+            write_deltaexchange_block(tmp, 'allMus', delta='0.01', parameter_weights="6870 3435", weight="3")
+        write_deltaexchange_block(tmp, parameter_name='frequencies', delta='0.01', weight='1')
 
     # GTR substitution model
-    # if re.search(parameters['substitution_model']. 'gtr'): etc etc
+    if re.search( 'gtr', parameters['substitution_model']):
+        if not parameters['partitions']:
+            write_deltaexchange_block(tmp, "gtr.rates", delta="0.01", weight="1")
+        else:
+            for partition in parameters['partitions']:
+                if isinstance(partition, list):
+                    name = 'CP' + str(partition[0]) + '+' + str(partition[1]) + '.'
+                else:
+                    name = 'CP' + str(partition) + '.'
 
-    # Base frequencies
-    write_deltaexchange_block(tmp, parameter_name='frequencies', delta='0.01', weight='1')
+                write_deltaexchange_block(tmp, name+"gtr.rates", delta="0.01", weight="1")
+        write_deltaexchange_block(tmp, parameter_name='frequencies', delta='0.01', weight='1')
 
     # Gamma heterogeneity across sites
     if parameters['gamma_alpha']:
@@ -260,7 +283,7 @@ def write_operator_block(x, parameters, precision, taxa):
                 write_scaleoperator_block(tmp, name + 'alpha', scale_factor='0.75', weight='1')
 
     # Uncorrelated lognormal relaxed clock
-    if re.search(parameters['clock_model'], 'ucld'):
+    if re.search('ucld', parameters['clock_model']):
         write_scaleoperator_block(tmp,"ucld.mean", scale_factor='0.75', weight='3')
         write_scaleoperator_block(tmp, "ucld.stdev", scale_factor='0.75', weight='3')
         write_updownoperator_block(tmp, "treeModel.allInternalNodeHeights", "ucld.mean", scale_factor='0.75', weight='3')
@@ -268,7 +291,8 @@ def write_operator_block(x, parameters, precision, taxa):
         write_uniformintegeroperator_block(tmp, "branchRates.categories", weight='10')
 
     # Strict clock
-    #if re.search(parameters['clock_model'], 'strict'):
+    if re.search('strict', parameters['clock_model']):
+        pass
 
     # Tree model operators
     if not parameters['empirical_tree_distribution']:
@@ -280,12 +304,12 @@ def write_operator_block(x, parameters, precision, taxa):
         write_uniformoperator_block(tmp, "treeModel.internalNodeHeights", weight='30')
 
     # Constant population
-    if re.search(parameters['population_model'], 'constant'):
+    if re.search('constant', parameters['population_model']):
         write_scaleoperator_block(tmp, 'constant.popSize', scale_factor='0.75', weight='3')
 
     # Non parameteric skygrid
-    if re.search(parameters['population_model'], 'skygrid'):
-        write_gmrfupdateroperator_block(tmp, )
+    if re.search('skygrid', parameters['population_model']):
+        write_gmrfupdateroperator_block(tmp, scale_factor="1.0", weight="2")
         write_scaleoperator_block(tmp, 'skygrid.precision', scale_factor='0.75', weight='1')
 
     # Precision sampling for tip-dates
@@ -294,6 +318,9 @@ def write_operator_block(x, parameters, precision, taxa):
 
 
     # Traits go here
+    if parameters['continuous_phylogeo']:
+        write_scaleoperator_block(tmp, 'location.diffusion.rates', scale_factor='0.75', weight='30')
+        write_precisiongibbs_block(tmp, weight='2')
 
     return x
 
