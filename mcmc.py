@@ -123,7 +123,7 @@ def write_asr_block(x, parameters):
         if key == 'continuous_phylogeo':
             name = 'location'
             tag = 'location'
-            idref = 'location.traitlikelihood'
+            idref = 'location.traitLikelihood'
             element = 'multivariateTraitLikelihood'
 
         #elif key == 'asr_sequence':
@@ -132,7 +132,7 @@ def write_asr_block(x, parameters):
         else:
             name = key+'.states'
             tag = key
-            idref = key+'.traitlikelihood'
+            idref = key+'.traitLikelihood'
             element = 'ancestralTreeLikelihood'
 
         tmp = etree.SubElement(x, 'trait', name=name, tag=tag)
@@ -220,9 +220,12 @@ def write_prior(x, parameters):
 
     return x
 
-def write_likelihood(x):
+def write_likelihood(x, parameters):
     tmp = etree.SubElement(x, 'likelihood', id='likelihood')
     etree.SubElement(tmp, 'treeDataLikelihood', idref='treeLikelihood')
+
+    if parameters['continuous_phylogeo']:
+        etree.SubElement(tmp, 'multivariateTraitLikelihood', idref="location.traitLikelihood")
 
     return x
 
@@ -243,9 +246,6 @@ def write_screenlog(x, parameters):
 
     elif re.search('strict', parameters['clock_model']):
         write_column(tmp, 'clock.rate', 'parameter')
-
-    if parameters['continuous_phylogeo']:
-        etree.SubElement(tmp, 'multivariateTraitLikelihood', idref="location.traitLikelihood")
 
     return x
 
@@ -375,7 +375,7 @@ def write_treelog(x, parameters):
 
         etree.SubElement(tmp, 'multivariateDiffusionModel', idref="location.diffusionModel")
         etree.SubElement(tmp, 'multivariateTraitLikelihood', idref="location.traitLikelihood")
-        tmp2 = etree.SubElement(tmp, 'trait', idref="location.rate")
+        tmp2 = etree.SubElement(tmp, 'trait', tag="location.rate")
         etree.SubElement(tmp2, 'arbitraryBranchRates', idref="location.diffusion.branchRates")
 
     return x
@@ -388,7 +388,7 @@ def write_mcmc(x, parameters, precision, taxa):
     # joint block including prior and likelihood
     tmp2 = etree.SubElement(tmp, 'joint', id='joint')
     write_prior(tmp2, parameters = parameters)
-    write_likelihood(tmp2)
+    write_likelihood(tmp2, parameters = parameters)
 
     # operator
     etree.SubElement(tmp, 'operators', idref='operators')

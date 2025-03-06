@@ -44,7 +44,7 @@ def write_multivariatemodel_block(x):
     tmp2 = etree.SubElement(tmp, 'precisionMatrix')
     tmp3 = etree.SubElement(tmp2, 'matrixParameter', id="location.precision")
     etree.SubElement(tmp3, "parameter", id="location.precision.col1", value="0.05 0.002")
-    etree.SubElement(tmp3, "parameter", id="location.precision.col2", value="0.05 0.002")
+    etree.SubElement(tmp3, "parameter", id="location.precision.col2", value="0.002 0.05")
 
     tmp = etree.SubElement(x, 'multivariateWishartPrior', id='location.precisionPrior', df='2')
     tmp2 = etree.SubElement(tmp, 'scaleMatrix')
@@ -59,17 +59,17 @@ def write_multivariatemodel_block(x):
 
 
 def write_cauchyrrw_block(x):
-    tmp = etree.SubElement(x, 'arbitraryBranchRates', id="location.diffusion.branchRates")
+    tmp = etree.SubElement(x, 'arbitraryBranchRates', id='location.diffusion.branchRates')
     etree.SubElement(tmp, "treeModel", idref="treeModel")
     tmp2 = etree.SubElement(tmp, 'rates')
-    etree.SubElement(tmp2, 'parameter', idref='location.diffusion.branchRates', lower='0.0')
+    etree.SubElement(tmp2, 'parameter', id= "location.diffusion.rates" , lower='0.0')
 
     tmp = etree.SubElement(x, 'distributionLikelihood', id="location.diffusion.prior")
     tmp2 = etree.SubElement(tmp, 'data')
     etree.SubElement(tmp2, 'parameter', idref='location.diffusion.rates')
 
     tmp2 = etree.SubElement(tmp, 'distribution')
-    tmp3 = etree.SubElement(tmp2, 'onePGammeDistributionModel')
+    tmp3 = etree.SubElement(tmp2, 'onePGammaDistributionModel')
     tmp4 = etree.SubElement(tmp3, 'shape')
     etree.SubElement(tmp4, 'parameter', value='0.5')
 
@@ -90,7 +90,7 @@ def write_cauchyrrwlikelihood_block(x, parameter):
     etree.SubElement(tmp, 'treeModel', idref="treeModel")
 
     tmp2 = etree.SubElement(tmp, 'traitParameter')
-    etree.SubElement(tmp2, 'parameter', idref='leaf.location')
+    etree.SubElement(tmp2, 'parameter', id='leaf.location')
 
     if parameter['continuous_phylogeo_jitter']:
         jitter = str(parameter['continuous_phylogeo_jitter'])
