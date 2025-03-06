@@ -241,11 +241,11 @@ def write_operator_block(x, parameters, precision, taxa):
     tmp = etree.SubElement(x, 'operators', id='operators', optimizationSchedule='default')
 
     # HKY substitution model
-    if re.search('hky', parameters['substitution_model']):
-        if not parameters['partitions']:
+    if parameters.substitution_model == 'hky':
+        if not parameters.partitions:
             write_scaleoperator_block(tmp, 'kappa', scale_factor='0.75', weight='1')
         else:
-            for partition in parameters['partitions']:
+            for partition in parameters.partitions:
                 if isinstance(partition, list):
                     name = 'CP' + str(partition[0]) + '+' + str(partition[1]) + '.'
                 else:
@@ -256,25 +256,29 @@ def write_operator_block(x, parameters, precision, taxa):
         write_deltaexchange_block(tmp, parameter_name='frequencies', delta='0.01', weight='1')
 
     # GTR substitution model
-    if re.search( 'gtr', parameters['substitution_model']):
-        if not parameters['partitions']:
-            write_deltaexchange_block(tmp, "gtr.rates", delta="0.01", weight="1")
+    if parameters.substitution_model == 'gtr':
+        rates = ['AC', 'AG', 'AT', 'CG', 'GT']
+        if not parameters.partitions:
+            for i in range(len(rates)):
+                write_deltaexchange_block(tmp, "gtr."+rates[i], delta="0.01", weight="1")
         else:
-            for partition in parameters['partitions']:
+            for partition in parameters.partitions:
                 if isinstance(partition, list):
                     name = 'CP' + str(partition[0]) + '+' + str(partition[1]) + '.'
                 else:
                     name = 'CP' + str(partition) + '.'
 
-                write_deltaexchange_block(tmp, name+"gtr.rates", delta="0.01", weight="1")
+                for i in range(len(rates)):
+                    write_deltaexchange_block(tmp, name+"gtr."+rates[i], delta="0.01", weight="1")
+            write_deltaexchange_block(tmp, 'allMus', delta='0.01', parameter_weights="568 568 568", weight="3")
         write_deltaexchange_block(tmp, parameter_name='frequencies', delta='0.01', weight='1')
 
     # Gamma heterogeneity across sites
-    if parameters['gamma_alpha']:
-        if not parameters['partitions']:
+    if parameters.use_gamma:
+        if not parameters.partitions:
             write_scaleoperator_block(tmp, 'alpha', scale_factor='0.75', weight='1')
         else:
-            for partition in parameters['partitions']:
+            for partition in parameters.partitions:
                 if isinstance(partition, list):
                     name = 'CP' + str(partition[0]) + '+' + str(partition[1]) + '.'
                 else:
@@ -283,7 +287,7 @@ def write_operator_block(x, parameters, precision, taxa):
                 write_scaleoperator_block(tmp, name + 'alpha', scale_factor='0.75', weight='1')
 
     # Uncorrelated lognormal relaxed clock
-    if re.search('ucld', parameters['clock_model']):
+    if parameters.clock_model == 'ucld':
         write_scaleoperator_block(tmp,"ucld.mean", scale_factor='0.75', weight='3')
         write_scaleoperator_block(tmp, "ucld.stdev", scale_factor='0.75', weight='3')
         write_updownoperator_block(tmp, "treeModel.allInternalNodeHeights", "ucld.mean", scale_factor='0.75', weight='3')
@@ -291,11 +295,11 @@ def write_operator_block(x, parameters, precision, taxa):
         write_uniformintegeroperator_block(tmp, "branchRates.categories", weight='10')
 
     # Strict clock
-    if re.search('strict', parameters['clock_model']):
+    if parameters.clock_model == 'strict':
         pass
 
     # Tree model operators
-    if not parameters['empirical_tree_distribution']:
+    if not parameters.empirical_tree_distribution:
         write_subtreeslide_block(tmp, size='1.0', weight='30', gaussian='true')
         write_narrowexchange_block(tmp, weight='30')
         write_wideexchange_block(tmp, weight='3')
@@ -304,11 +308,11 @@ def write_operator_block(x, parameters, precision, taxa):
         write_uniformoperator_block(tmp, "treeModel.internalNodeHeights", weight='30')
 
     # Constant population
-    if re.search('constant', parameters['population_model']):
+    if parameters.tree_model == "constant":
         write_scaleoperator_block(tmp, 'constant.popSize', scale_factor='0.75', weight='3')
 
     # Non parameteric skygrid
-    if re.search('skygrid', parameters['population_model']):
+    if parameters.tree_model == "skygrid":
         write_gmrfupdateroperator_block(tmp, scale_factor="1.0", weight="2")
         write_scaleoperator_block(tmp, 'skygrid.precision', scale_factor='0.75', weight='1')
 
@@ -318,7 +322,7 @@ def write_operator_block(x, parameters, precision, taxa):
 
 
     # Traits go here
-    if parameters['continuous_phylogeo']:
+    if parameters.continuous_phylogeo:
         write_scaleoperator_block(tmp, 'location.diffusion.rates', scale_factor='0.75', weight='30')
         write_precisiongibbs_block(tmp, weight='2')
 
