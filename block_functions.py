@@ -223,9 +223,9 @@ def write_coalescentlikelihood_block(x):
 def write_skygridlikelihood_block(x, parameters):
 
     # Extract parameters
-    sg_popsize = parameters["skygrid_populationsize"]
-    sg_gridpoints = parameters["skygrid_gridpoints"]
-    sg_cutoff = parameters["skygrid_cutoff"]
+    sg_popsize = parameters.skygrid_grids
+    sg_gridpoints = str(float(parameters.skygrid_grids)+1)
+    sg_cutoff = parameters.skygrid_cutoff
 
     # Write XML
     tmp = etree.SubElement(x, 'gmrfSkyGridLikelihood', id="skygrid")
@@ -248,11 +248,8 @@ def write_skygridlikelihood_block(x, parameters):
 
 
 def write_relaxedclock_block(x, parameters):
-    # Extract parameters
-    ucld_mean = parameters["ucld_mean"]
-    ucld_stdev= parameters["ucld_stdev"]
-    ucld_meaninrealspace = parameters["ucld_meaninrealspace"]
-
+    ucld_mean = re.split(',', parameters.ucld_mean)[1]
+    ucld_stdev = re.split(',', parameters.ucld_stdev)[1]
 
     # Write XML
     # discretised branch rates
@@ -260,7 +257,7 @@ def write_relaxedclock_block(x, parameters):
     etree.SubElement(tmp, "treeModel", idref="treeModel")
     # distribution
     tmp2 = etree.SubElement(tmp, "distribution")
-    tmp3 = etree.SubElement(tmp2, "logNormalDistributionModel", meanInRealSpace=ucld_meaninrealspace)
+    tmp3 = etree.SubElement(tmp2, "logNormalDistributionModel", meanInRealSpace='true')
     tmp4 = etree.SubElement(tmp3, "mean")
     etree.SubElement(tmp4, "parameter", id="ucld.mean", value=ucld_mean, lower="0.0")
     tmp4 = etree.SubElement(tmp3, "stdev")
@@ -285,7 +282,7 @@ def write_relaxedclock_block(x, parameters):
     return x
 
 
-def write_strictclock_block(x, parameters):
+def write_strictclock_block(x):
     tmp = etree.SubElement(x, 'strictClockBranchRates', id="branchRates")
     tmp2 = etree.SubElement(tmp, 'rate')
     etree.SubElement(tmp2, "parameter", id='clock.rate', value='1.0')
@@ -299,15 +296,9 @@ def write_strictclock_block(x, parameters):
 
 
 # HKY -remember we're passing partition outside the function:
-# if partition:
-#   for p in partition:
-#       write_hky_block
-# else write_hky_block(x, '', parameters)
 
-def write_hky_block(x, partition, parameters):
-    # Extract parameters
-    hky_kappa = parameters["hky_kappa"]
 
+def write_hky_block(x, partition):
     if not partition:
         name = ''
 
@@ -334,15 +325,23 @@ def write_hky_block(x, partition, parameters):
 
     # Kappa block
     tmp2 = etree.SubElement(tmp, 'kappa')
-    etree.SubElement(tmp2, 'parameter', id= name+'kappa', value=hky_kappa, lower='0.0')
+    etree.SubElement(tmp2, 'parameter', id= name+'kappa', value='1.0', lower='0.0')
 
     return x
 
 
-def write_gtr_block(x, partition, parameters):
+def write_gtr_block(x, partition):
     # Extract parameters
-    gtr_rates_value = parameters["gtr_rates_value"]
-    gtr_rates_dimension = parameters["gtr_rates_dimension"]
+    #gtr_rates_value = parameters["gtr_rates_value"]
+    #gtr_rates_dimension = parameters["gtr_rates_dimension"]
+
+    #gtr_rate_ac = parameters.gtr_ac
+    #gtr_rate_ag = parameters.gtr_ag
+    #gtr_rate_at = parameters.gtr_at
+    #gtr_rate_cg = parameters.gtr_cg
+    #gtr_rate_gt = parameters.gtr_gt
+
+    #gtr_rates_value = [gtr_rate_ac, gtr_rate_ag, gtr_rate_at, gtr_rate_cg, gtr_rate_gt]
 
     if not partition:
         name = ''
@@ -368,8 +367,16 @@ def write_gtr_block(x, partition, parameters):
         etree.SubElement(tmp4, 'parameter', idref='frequencies')
 
     # rates block
-    tmp2 = etree.SubElement(tmp, 'rates')
-    etree.SubElement(tmp2, 'parameter', id=name + 'gtr.rates', value=gtr_rates_value, dimension=gtr_rates_dimension, lower='0.0')
+
+    #if all(i == gtr_rates_value[0] for i in gtr_rates_value):
+        #tmp2 = etree.SubElement(tmp, 'rates')
+        #etree.SubElement(tmp2, 'parameter', id=name + 'gtr.rates', value=gtr_rates_value[0], dimension='6', lower='0.0')
+
+   # else:
+    rates = ['AC', 'AG', 'AT', 'CG', 'GT']
+    for i in range(len(rates)):
+        tmp2 = etree.SubElement(tmp, 'rate'+rates[i])
+        etree.SubElement(tmp2, 'parameter', id=name+'gtr.'+rates[i], value='1.0', lower='0.0')
 
     return x
 
@@ -378,9 +385,10 @@ def write_gtr_block(x, partition, parameters):
 def write_site_block(x, partition, parameters):
     # Extract parameters
 
-    substitution_model = parameters["substitution_model"]
-    gamma_categories = parameters["gamma_categories"]
-    gamma_alpha = parameters["gamma_alpha"]
+    substitution_model = parameters.substitution_model
+    use_gamma = parameters.use_gamma
+    gamma_categories = parameters.gamma_categories
+    #gamma_alpha = parameters["gamma_alpha"]
 
     if not partition:
         name = ''
@@ -393,29 +401,33 @@ def write_site_block(x, partition, parameters):
 
     # Link to substitution model
     tmp = etree.SubElement(x, 'siteModel', id=name+'siteModel')
-    tmp2 = etree.SubElement(tmp, 'substitutionModel')
 
     if re.search('hky', substitution_model):
+        tmp2 = etree.SubElement(tmp, 'substitutionModel')
         etree.SubElement(tmp2, substitution_model.upper()+'Model', idref=name+substitution_model)
 
         tmp3 = etree.SubElement(tmp, 'relativeRate')
         etree.SubElement(tmp3, 'parameter', id=name + 'mu', value='1.0', lower='0.0')
 
     elif re.search('gtr', substitution_model):
+        tmp2 = etree.SubElement(tmp, 'substitutionModel')
         etree.SubElement(tmp2, substitution_model + 'Model', idref=name + substitution_model)
 
-    if gamma_categories and gamma_alpha:
+        tmp3 = etree.SubElement(tmp, 'relativeRate')
+        etree.SubElement(tmp3, 'parameter', id=name + 'mu', value='1.0', lower='0.0')
+
+    if use_gamma:
         tmp4 = etree.SubElement(tmp, 'gammaShape', gammaCategories=gamma_categories)
-        etree.SubElement(tmp4, 'parameter',  id=name+'alpha', value=gamma_alpha, lower='0.0')
+        etree.SubElement(tmp4, 'parameter',  id=name+'alpha', value='0.5', lower='0.0')
 
     return x
 
 
 # Define compound parameter
 # Only called if partition is present
-def write_compound_block(x, args):
+def write_compound_block(x, parameters):
     tmp = etree.SubElement(x, 'compoundParameter', id='allMus')
-    partitions = args['partitions']
+    partitions = parameters.partitions
 
     for partition in partitions:
         if isinstance(partition, list):
@@ -431,8 +443,8 @@ def write_compound_block(x, args):
 # Write block describing likelihood for tree given sequence data
 # Must loop through partitions within function
 def write_treedatalikelihood_block(x, parameters):
-    partitions = parameters["partitions"]
-    clock_model = parameters["clock_model"]
+    partitions = parameters.partitions
+    clock_model = parameters.clock_model
 
     tmp = etree.SubElement(x, 'treeDataLikelihood', id='treeLikelihood', useAmbiguities="false")
 
