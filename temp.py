@@ -1,13 +1,13 @@
-
 from csv import DictReader
 
-#from WriteEddieShell.BEASTPyXML.empirical_tree_model import write_empirical_tree_model
+# from WriteEddieShell.BEASTPyXML.empirical_tree_model import write_empirical_tree_model
 from block_functions import *
 from operators import *
 from mcmc import *
 from cmd_parser import *
 from continuous_phylogeo import *
 from empirical_tree_model import *
+
 
 def main():
     args = parse_args()
@@ -38,10 +38,10 @@ def main():
     if not args.empirical_tree_model:
         test = write_patterns_block(test, args.partitions)
 
-    # population
+        # population
         test = write_treeprior_block(test, args.tree_model)
 
-    # tree model
+        # tree model
         test = write_treemodel_block(test, taxa, date_precision)
 
     else:
@@ -117,16 +117,10 @@ def main():
     # Save to file
     xml_string = etree.tostring(test, pretty_print=True, encoding="utf-8", xml_declaration=True,
                                 standalone="yes").decode()
-    with open(args.file_stem+".xml", "w", encoding="utf-8") as f:
+    with open(args.file_stem + ".xml", "w", encoding="utf-8") as f:
         f.write(xml_string)
         f.close()
 
 
 if __name__ == '__main__':
     main()
-
-
-
-
-
-

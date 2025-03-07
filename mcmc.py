@@ -1,36 +1,36 @@
 import re
 from lxml import etree
 
-def write_prior(x, parameter_name, prior_string):
 
-    dist, params = re.split(',', prior_string,1)
+def write_prior(x, parameter_name, prior_string):
+    dist, params = re.split(',', prior_string, 1)
     params = params.split(',')
 
     if dist == 'lognormal':
-            if params[2]:
-                write_lognormal_prior(x,
-                                      parameter_name,
-                                      mean_in_real_space = 'true',
-                                      mean = params[0],
-                                      stdev = params[1])
-            else:
-                write_lognormal_prior(x,
-                                      parameter_name,
-                                      mean_in_real_space = 'false',
-                                      mu = params[0],
-                                      sigma = params[1])
+        if params[2]:
+            write_lognormal_prior(x,
+                                  parameter_name,
+                                  mean_in_real_space='true',
+                                  mean=params[0],
+                                  stdev=params[1])
+        else:
+            write_lognormal_prior(x,
+                                  parameter_name,
+                                  mean_in_real_space='false',
+                                  mu=params[0],
+                                  sigma=params[1])
 
-    #if dist == 'normal':
-        #write_normal_prior(x,
-                           #parameter_name,
-                           #mean=params[0],
-                           #stdev=params[1])
+    # if dist == 'normal':
+    # write_normal_prior(x,
+    # parameter_name,
+    # mean=params[0],
+    # stdev=params[1])
 
     if dist == 'uniform':
         write_uniform_prior(x,
-                           parameter_name,
-                           lower=params[0],
-                           upper=params[1])
+                            parameter_name,
+                            lower=params[0],
+                            upper=params[1])
 
     if dist == 'gamma':
         write_gamma_prior(x,
@@ -42,12 +42,11 @@ def write_prior(x, parameter_name, prior_string):
     if dist == 'exponential':
         write_exponential_prior(x,
                                 parameter_name,
-                               # offset=params[0],
-                               # scale=params[0],
+                                # offset=params[0],
+                                # scale=params[0],
                                 mean=params[0])
 
     return x
-
 
 
 # Lognormal Prior
@@ -65,7 +64,6 @@ def write_lognormal_prior(x, parameter_name, **kwargs):
                   "meanInRealSpace": mean_in_real_space,
                   "mean": mean,
                   "stdev": stdev}
-
 
     # Filter out missing arguments
     clean_attributes = {key: value for (key, value) in attributes.items() if value is not None}
@@ -101,10 +99,9 @@ def write_exponential_prior(x, parameter_name, **kwargs):
     scale = kwargs.get('scale', None)
     mean = kwargs.get('mean', None)
 
-
     attributes = {"offset": offset,
                   "scale": scale,
-                  "mean":mean}
+                  "mean": mean}
 
     # Filter out missing arguments
     clean_attributes = {key: value for (key, value) in attributes.items() if value is not None}
@@ -117,13 +114,13 @@ def write_exponential_prior(x, parameter_name, **kwargs):
 
 
 # 1/X prior - this is an improper prior so not included
-#def write_oneonx_prior(x, parameter_name):
+# def write_oneonx_prior(x, parameter_name):
 
-    # Write Attribute
-    #tmp = etree.SubElement(x, 'oneOnXPrior')
-    #etree.SubElement(tmp, 'parameter', idref=parameter_name)
+# Write Attribute
+# tmp = etree.SubElement(x, 'oneOnXPrior')
+# etree.SubElement(tmp, 'parameter', idref=parameter_name)
 
-    #return x
+# return x
 
 def write_gamma_prior(x, parameter_name, **kwargs):
     offset = kwargs.get('offset', None)
@@ -162,27 +159,27 @@ def write_dirichlet_prior(x, parameter_name, **kwargs):
 
     return x
 
-def write_asr_block(x, parameters):
 
+def write_asr_block(x, parameters):
     possible_traits = {key: vars(parameters).get(key) for key in ['continuous_phylogeo', 'asr_sequence', 'dta']}
 
     traits_to_reconstruct = {key: value for (key, value) in possible_traits.items() if value is not None}
-    #traits_to_reconstruct = {key: value for key, value in vars(parameters).items() if value is not None and value is not False}
+    # traits_to_reconstruct = {key: value for key, value in vars(parameters).items() if value is not None and value is not False}
 
-    for key,value in traits_to_reconstruct.items():
+    for key, value in traits_to_reconstruct.items():
         if key == 'continuous_phylogeo':
             name = 'location'
             tag = 'location'
             idref = 'location.traitLikelihood'
             element = 'multivariateTraitLikelihood'
 
-        #elif key == 'asr_sequence':
-            #pass
+        # elif key == 'asr_sequence':
+        # pass
 
         else:
-            name = key+'.states'
+            name = key + '.states'
             tag = key
-            idref = key+'.traitLikelihood'
+            idref = key + '.traitLikelihood'
             element = 'ancestralTreeLikelihood'
 
         tmp = etree.SubElement(x, 'trait', name=name, tag=tag)
@@ -199,7 +196,7 @@ def write_prior_block(x, parameters):
         if parameters.substitution_model == "hky":
             if not parameters.partitions:
                 write_prior(tmp, 'kappa', parameters.hky_kappa)
-                #write_lognormal_prior(tmp, 'kappa', mu="1.0", sigma="1.25", offset="0.0")
+                # write_lognormal_prior(tmp, 'kappa', mu="1.0", sigma="1.25", offset="0.0")
             else:
                 for partition in parameters.partitions:
                     if isinstance(partition, list):
@@ -207,12 +204,11 @@ def write_prior_block(x, parameters):
                     else:
                         name = 'CP' + str(partition) + '.'
 
-                    #write_lognormal_prior(tmp, name+'kappa', mu="1.0", sigma="1.25", offset="0.0")
-                    write_prior(tmp, name+'kappa', parameters.hky_kappa)
-                #write_uniform_prior(tmp, 'allMus', lower='0.0', upper='100.0')
+                    # write_lognormal_prior(tmp, name+'kappa', mu="1.0", sigma="1.25", offset="0.0")
+                    write_prior(tmp, name + 'kappa', parameters.hky_kappa)
+                # write_uniform_prior(tmp, 'allMus', lower='0.0', upper='100.0')
                 write_prior(tmp, 'allMus', parameters.all_mus)
-            #write_uniform_prior(tmp, 'frequencies', lower='0.0', upper='1.0')
-
+            # write_uniform_prior(tmp, 'frequencies', lower='0.0', upper='1.0')
 
         # GTR substitution model
         if parameters.substitution_model == "gtr":
@@ -220,8 +216,8 @@ def write_prior_block(x, parameters):
             if not parameters.partitions:
                 for i in range(len(rates)):
                     param = f"gtr_{rates[i].lower()}"
-                    write_prior(tmp, 'gtr.'+rates[i], getattr(parameters, param))
-                    #write_dirichlet_prior(tmp, "gtr.rates", alpha="1.0", sums_to="6.0")
+                    write_prior(tmp, 'gtr.' + rates[i], getattr(parameters, param))
+                    # write_dirichlet_prior(tmp, "gtr.rates", alpha="1.0", sums_to="6.0")
             else:
                 for partition in parameters.partitions:
                     if isinstance(partition, list):
@@ -231,38 +227,37 @@ def write_prior_block(x, parameters):
 
                     for i in range(len(rates)):
                         param = f"gtr_{rates[i].lower()}"
-                        write_prior(tmp, name+  'gtr.' + rates[i], getattr(parameters, param))
+                        write_prior(tmp, name + 'gtr.' + rates[i], getattr(parameters, param))
 
-                        #write_dirichlet_prior(tmp, name + "gtr.rates", alpha="1.0", sums_to="6.0")
+                        # write_dirichlet_prior(tmp, name + "gtr.rates", alpha="1.0", sums_to="6.0")
                 write_prior(tmp, 'allMus', parameters.all_mus)
-            #write_dirichlet_prior(tmp, 'frequencies', alpha="1.0", sums_to="1.0")
+            # write_dirichlet_prior(tmp, 'frequencies', alpha="1.0", sums_to="1.0")
 
         # Base frequencies
-        #write_uniform_prior(tmp, 'frequencies', lower='0.0', upper='1.0')
+        # write_uniform_prior(tmp, 'frequencies', lower='0.0', upper='1.0')
         write_dirichlet_prior(tmp, 'frequencies', alpha="1.0", sums_to="1.0")
 
         # Gamma heterogeneity across sites
         if parameters.use_gamma:
             if not parameters.partitions:
                 write_prior(tmp, 'alpha', parameters.gamma_alpha)
-                #write_exponential_prior(tmp, 'alpha', mean="0.5", offset="0.0")
+                # write_exponential_prior(tmp, 'alpha', mean="0.5", offset="0.0")
             else:
                 for partition in parameters.partitions:
                     if isinstance(partition, list):
                         name = 'CP' + str(partition[0]) + '+' + str(partition[1]) + '.'
                     else:
                         name = 'CP' + str(partition) + '.'
-                    write_prior(tmp,  name+'alpha', parameters.gamma_alpha)
-                    #write_exponential_prior(tmp, name+'alpha', mean="0.5", offset="0.0")
+                    write_prior(tmp, name + 'alpha', parameters.gamma_alpha)
+                    # write_exponential_prior(tmp, name+'alpha', mean="0.5", offset="0.0")
 
         # Uncorrelated lognormal relaxed clock
         if parameters.clock_model == 'ucld':
             write_prior(tmp, 'ucld.mean', parameters.ucld_mean)
             write_prior(tmp, 'ucld.stdev', parameters.ucld_stdev)
 
-
-            #write_lognormal_prior(tmp, 'ucld.mean', mean= parameters['ucld_mean_mean'], stdev= parameters['ucld_mean_stdev'], offset="0.0")
-            #write_exponential_prior(tmp, 'ucld.stdev', mean="0.3333333333333333", offset="0.0")
+            # write_lognormal_prior(tmp, 'ucld.mean', mean= parameters['ucld_mean_mean'], stdev= parameters['ucld_mean_stdev'], offset="0.0")
+            # write_exponential_prior(tmp, 'ucld.stdev', mean="0.3333333333333333", offset="0.0")
             etree.SubElement(tmp, 'discretizedBranchRates', idref="branchRates")
 
         # Strict clock
@@ -270,14 +265,13 @@ def write_prior_block(x, parameters):
             write_prior(tmp, 'clock.rate', parameters.clock_rate)
             etree.SubElement(tmp, 'strictClockBranchRates', idref="branchRates")
 
-
         # Tree model operators
         if not parameters.empirical_tree_distribution:
 
             # Constant population
             if parameters.tree_model == "constant":
                 etree.SubElement(tmp, 'coalescentLikelihood', idref="coalescent")
-                #write_oneonx_prior(tmp, "constant.popSize")
+                # write_oneonx_prior(tmp, "constant.popSize")
                 write_prior(tmp, "constant.popSize", parameters.constant_population)
 
             # Non parameteric skygrid
@@ -292,6 +286,7 @@ def write_prior_block(x, parameters):
 
     return x
 
+
 def write_likelihood(x, parameters):
     tmp = etree.SubElement(x, 'likelihood', id='likelihood')
 
@@ -303,14 +298,16 @@ def write_likelihood(x, parameters):
 
     return x
 
+
 def write_column(x, label, element):
     tmp = etree.SubElement(x, 'column', label=label, dp='4', width='12')
     etree.SubElement(tmp, element, idref=label.lower())
     return x
 
+
 def write_screenlog(x, parameters):
     tmp = etree.SubElement(x, 'log', id='screenlog', logEvery=parameters.log_every)
-    write_column(tmp,'Joint', 'joint')
+    write_column(tmp, 'Joint', 'joint')
     write_column(tmp, 'Prior', 'prior')
     write_column(tmp, 'Likelihood', 'likelihood')
 
@@ -327,7 +324,8 @@ def write_screenlog(x, parameters):
 
 
 def write_filelog(x, parameters, precision, taxa):
-    tmp = etree.SubElement(x, 'log', id='fileLog', logEvery=parameters.log_every, fileName=parameters.file_stem+'.log', overwrite='false')
+    tmp = etree.SubElement(x, 'log', id='fileLog', logEvery=parameters.log_every,
+                           fileName=parameters.file_stem + '.log', overwrite='false')
     etree.SubElement(tmp, 'joint', idref='joint')
     etree.SubElement(tmp, 'prior', idref='prior')
     etree.SubElement(tmp, 'likelihood', idref='likelihood')
@@ -347,7 +345,7 @@ def write_filelog(x, parameters, precision, taxa):
             etree.SubElement(tmp, 'parameter', idref="skygrid.logPopSize")
             etree.SubElement(tmp, 'parameter', idref="skygrid.cutOff")
 
-    # HKY substitution model
+        # HKY substitution model
         if parameters.substitution_model == 'hky':
             if not parameters.partitions:
                 etree.SubElement(tmp, 'parameter', idref="kappa")
@@ -358,16 +356,15 @@ def write_filelog(x, parameters, precision, taxa):
                     else:
                         name = 'CP' + str(partition) + '.'
 
-                    etree.SubElement(tmp, 'parameter', idref=name+"kappa")
+                    etree.SubElement(tmp, 'parameter', idref=name + "kappa")
 
-
-    # GTR substitution model
+        # GTR substitution model
         if parameters.substitution_model == 'gtr':
             rates = ['AC', 'AG', 'AT', 'CG', 'GT']
 
             if not parameters.partitions:
                 for i in range(len(rates)):
-                    etree.SubElement(tmp, 'parameter', idref="gtr."+rates[i])
+                    etree.SubElement(tmp, 'parameter', idref="gtr." + rates[i])
             else:
                 for partition in parameters.partitions:
                     if isinstance(partition, list):
@@ -378,14 +375,13 @@ def write_filelog(x, parameters, precision, taxa):
                     for i in range(len(rates)):
                         etree.SubElement(tmp, 'parameter', idref=name + "gtr." + rates[i])
 
-
         # Base frequencies
         etree.SubElement(tmp, 'parameter', idref="frequencies")
 
         if parameters.partitions:
             etree.SubElement(tmp, 'compoundParameter', idref="allMus")
 
-    # Gamma heterogeneity across sites
+        # Gamma heterogeneity across sites
         if parameters.use_gamma:
             if not parameters.partitions:
                 etree.SubElement(tmp, 'parameter', idref="alpha")
@@ -396,7 +392,7 @@ def write_filelog(x, parameters, precision, taxa):
                     else:
                         name = 'CP' + str(partition) + '.'
 
-                    etree.SubElement(tmp, 'parameter', idref=name+"alpha")
+                    etree.SubElement(tmp, 'parameter', idref=name + "alpha")
 
         # Uncorrelated lognormal relaxed clock
         if parameters.clock_model == 'ucld':
@@ -429,11 +425,11 @@ def write_filelog(x, parameters, precision, taxa):
     if not parameters.empirical_tree_distribution:
         etree.SubElement(tmp, 'treeDataLikelihood', idref='treeLikelihood')
 
-    # Constant population
+        # Constant population
         if parameters.tree_model == "constant":
             etree.SubElement(tmp, 'coalescentLikelihood', idref='coalescent')
 
-    # Non parameteric skygrid
+        # Non parameteric skygrid
         if parameters.tree_model == "skygrid":
             etree.SubElement(tmp, 'gmrfSkyGridLikelihood', idref='skygrid')
 
@@ -441,7 +437,8 @@ def write_filelog(x, parameters, precision, taxa):
 
 
 def write_treelog(x, parameters):
-    tmp = etree.SubElement(x, 'logTree', id="treeFileLog", logEvery=parameters.log_every ,nexusFormat="true", fileName=parameters.file_stem + '.trees', sortTranslationTable="true")
+    tmp = etree.SubElement(x, 'logTree', id="treeFileLog", logEvery=parameters.log_every, nexusFormat="true",
+                           fileName=parameters.file_stem + '.trees', sortTranslationTable="true")
     etree.SubElement(tmp, 'treeModel', idref='treeModel')
 
     if not parameters.empirical_tree_distribution:
@@ -453,7 +450,7 @@ def write_treelog(x, parameters):
 
     etree.SubElement(tmp, 'joint', idref='joint')
 
-    #traits go here
+    # traits go here
     if parameters.continuous_phylogeo:
         write_asr_block(x, parameters)
 
@@ -465,34 +462,33 @@ def write_treelog(x, parameters):
     return x
 
 
-
 def write_mcmc(x, parameters, precision, taxa):
-    tmp = etree.SubElement(x, 'mcmc', id='mcmc',  chainLength=parameters.chain_length, autoOptimize="true", operatorAnalysis= parameters.file_stem+'.ops')
+    tmp = etree.SubElement(x, 'mcmc', id='mcmc', chainLength=parameters.chain_length, autoOptimize="true",
+                           operatorAnalysis=parameters.file_stem + '.ops')
 
     # joint block including prior and likelihood
     tmp2 = etree.SubElement(tmp, 'joint', id='joint')
-    write_prior_block(tmp2, parameters = parameters)
-    write_likelihood(tmp2, parameters = parameters)
+    write_prior_block(tmp2, parameters=parameters)
+    write_likelihood(tmp2, parameters=parameters)
 
     # operator
     etree.SubElement(tmp, 'operators', idref='operators')
 
     # screen log
-    write_screenlog(tmp, parameters = parameters)
+    write_screenlog(tmp, parameters=parameters)
 
     # file log
-    write_filelog(tmp, parameters = parameters, precision = precision, taxa = taxa)
+    write_filelog(tmp, parameters=parameters, precision=precision, taxa=taxa)
 
-    #tree log
-    write_treelog(tmp, parameters = parameters)
+    # tree log
+    write_treelog(tmp, parameters=parameters)
 
     return x
 
+
 def write_report(x):
-     tmp = etree.SubElement(x, 'report')
-     tmp2 = etree.SubElement(tmp, 'property', name='timer')
-     etree.SubElement(tmp2, 'mcmc', idref='mcmc')
+    tmp = etree.SubElement(x, 'report')
+    tmp2 = etree.SubElement(tmp, 'property', name='timer')
+    etree.SubElement(tmp2, 'mcmc', idref='mcmc')
 
-     return x
-
-
+    return x

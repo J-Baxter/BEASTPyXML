@@ -1,6 +1,7 @@
 import argparse
 import sys
 
+
 # Format partition
 def parse_partition(value):
     parts = value.split(',')
@@ -14,32 +15,32 @@ def parse_partition(value):
         return [int(x) for x in parts]
 
 
-#"skygrid_populationsize": '32', #integer
-         #"skygrid_gridpoints": '31.0',
-         #'skygrid_cutoff':'8.0',
-         #'clock_model': 'ucld',
-         #'ucld_mean': '0.003',
-         #'ucld_stdev': '0.05',
-        # 'ucld_meaninrealspace': 'true',
-        # 'substitution_model': 'hky',
-         #'hky_kappa': '2.0',
-         #'gamma_categories': '4',
-         #'gamma_alpha': '0.5',
-         #'population_model': 'constant',
-         #'partitions': [[1,2],3],
-        #'empirical_tree_distribution': None,
-       # 'chain_length':'10000000',
-        #'log_every':'1000',
-        #"gtr_rates_value": '1.0',
-        #"gtr_rates_dimension": '6',
-        #'continuous_phylogeo': 'true',
-       # 'continuous_phylogeo_jitter': '0.001',
-        #'trait_names': ['lat', 'lon'],
+# "skygrid_populationsize": '32', #integer
+# "skygrid_gridpoints": '31.0',
+# 'skygrid_cutoff':'8.0',
+# 'clock_model': 'ucld',
+# 'ucld_mean': '0.003',
+# 'ucld_stdev': '0.05',
+# 'ucld_meaninrealspace': 'true',
+# 'substitution_model': 'hky',
+# 'hky_kappa': '2.0',
+# 'gamma_categories': '4',
+# 'gamma_alpha': '0.5',
+# 'population_model': 'constant',
+# 'partitions': [[1,2],3],
+# 'empirical_tree_distribution': None,
+# 'chain_length':'10000000',
+# 'log_every':'1000',
+# "gtr_rates_value": '1.0',
+# "gtr_rates_dimension": '6',
+# 'continuous_phylogeo': 'true',
+# 'continuous_phylogeo_jitter': '0.001',
+# 'trait_names': ['lat', 'lon'],
 
 def parse_args():
     parser = argparse.ArgumentParser(description='make a BEAST v1.10.4 XML')
 
-    #Sequence parameters
+    # Sequence parameters
     seq_group = parser.add_argument_group('Sequence options')
     seq_group.add_argument("--fasta",
                            dest="fasta",
@@ -49,16 +50,16 @@ def parse_args():
     seq_group.add_argument("--codon-partitioning",
                            dest="partitions",
                            type=parse_partition,
-                           #action="store_false",
+                           # action="store_false",
                            help="comma separated list describing codon partitioning. For example, the codon partitioning required for SRD06 would be 1+2,3")
 
     # Substitution model parameters
     site_group = parser.add_argument_group('Substitution model options')
 
     site_group.add_argument("--substitution-model",
-                             dest="substitution_model",
-                             choices=['hky', 'gtr'],
-                             help="Select substitution model. Currently limited to HKY and GTR")
+                            dest="substitution_model",
+                            choices=['hky', 'gtr'],
+                            help="Select substitution model. Currently limited to HKY and GTR")
 
     site_group.add_argument("--gamma",
                             dest="use_gamma",
@@ -74,9 +75,9 @@ def parse_args():
     clock_group = parser.add_argument_group('Molecular clock model options')
 
     clock_group.add_argument("--clock-model",
-                            dest="clock_model",
-                            choices=['ucld', 'strict'],
-                            help="Select clock model. Currently limited to strict and uncorrelated relaxed lognormal")
+                             dest="clock_model",
+                             choices=['ucld', 'strict'],
+                             help="Select clock model. Currently limited to strict and uncorrelated relaxed lognormal")
 
     # Tree parameters
     tree_group = parser.add_argument_group('Tree model options')
@@ -105,7 +106,6 @@ def parse_args():
                             required='--empirical-tree-model' in sys.argv,
                             help="Treefile containing posterior tree distribution")
 
-
     # Relaxed clock priors
     prior_group = parser.add_argument_group("Prior Options")
     prior_group.add_argument("--ucld-mean",  # change to start values (check this is correct)!!!
@@ -133,7 +133,7 @@ def parse_args():
     # GTR model priors
     site_group.add_argument("--gtr-ac",
                             dest="gtr_ac",
-                            default= 'gamma,0.05,20.0',
+                            default='gamma,0.05,20.0',
                             help='Specify the prior distribution for GTR A-C substitution parameter')
 
     site_group.add_argument("--gtr-ag",
@@ -166,7 +166,7 @@ def parse_args():
     prior_group.add_argument("--allMus",
                              dest="all_mus",
                              default='uniform,0,100',
-                             help='Specify the prior distribution for relative rates amongst partitions parameter' )
+                             help='Specify the prior distribution for relative rates amongst partitions parameter')
 
     # Constant Population prior
     prior_group.add_argument("--constant-pop",

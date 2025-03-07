@@ -77,13 +77,8 @@ def write_cauchyrrw_block(x):
 
 
 def write_cauchyrrwlikelihood_block(x, parameter):
-    tmp = etree.SubElement(x, 'multivariateTraitLikelihood',
-                           id='location.traitLikelihood',
-                           traitName='location',
-                           useTreeLength='true',
-                           scaleByTime='true',
-                           reportAsMultivariate='true',
-                           reciprocalRates='true',
+    tmp = etree.SubElement(x, 'multivariateTraitLikelihood', id='location.traitLikelihood', traitName='location',
+                           useTreeLength='true', scaleByTime='true', reportAsMultivariate='true', reciprocalRates='true',
                            integrateInternalTraits='true')
 
     etree.SubElement(tmp, 'multivariateDiffusionModel', idref="location.diffusionModel")

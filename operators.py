@@ -2,7 +2,7 @@ import re
 from lxml import etree
 
 
-def write_scaleoperator_block(x, parameter_name,**kwargs):
+def write_scaleoperator_block(x, parameter_name, **kwargs):
     scale_factor = kwargs.get('scale_factor', None)
     scale_all = kwargs.get('scale_all', None)
     scale_all_independently = kwargs.get('scale_all_independently', None)
@@ -11,11 +11,11 @@ def write_scaleoperator_block(x, parameter_name,**kwargs):
     df = kwargs.get('df', None)
 
     attributes = {"scaleFactor": scale_factor,
-              "scaleAll": scale_all,
-              "scaleAllIndependently": scale_all_independently,
-              "weight": weight,
-              "autoOptimize": auto_optimize,
-              "df": df}
+                  "scaleAll": scale_all,
+                  "scaleAllIndependently": scale_all_independently,
+                  "weight": weight,
+                  "autoOptimize": auto_optimize,
+                  "df": df}
 
     # Filter out missing arguments
     clean_attributes = {key: value for (key, value) in attributes.items() if value is not None}
@@ -222,6 +222,7 @@ def write_gmrfupdateroperator_block(x, **kwargs):
 
     return x
 
+
 def write_precisiongibbs_block(x, **kwargs):
     weight = kwargs.get('weight', None)
     attributes = {"weight": weight}
@@ -253,7 +254,7 @@ def write_operator_block(x, parameters, precision, taxa):
                     else:
                         name = 'CP' + str(partition) + '.'
 
-                    write_scaleoperator_block(tmp, name+'kappa', scale_factor='0.75', weight='1')
+                    write_scaleoperator_block(tmp, name + 'kappa', scale_factor='0.75', weight='1')
                 write_deltaexchange_block(tmp, 'allMus', delta='0.01', parameter_weights="6870 3435", weight="3")
             write_deltaexchange_block(tmp, parameter_name='frequencies', delta='0.01', weight='1')
 
@@ -262,7 +263,7 @@ def write_operator_block(x, parameters, precision, taxa):
             rates = ['AC', 'AG', 'AT', 'CG', 'GT']
             if not parameters.partitions:
                 for i in range(len(rates)):
-                    write_deltaexchange_block(tmp, "gtr."+rates[i], delta="0.01", weight="1")
+                    write_deltaexchange_block(tmp, "gtr." + rates[i], delta="0.01", weight="1")
             else:
                 for partition in parameters.partitions:
                     if isinstance(partition, list):
@@ -271,7 +272,7 @@ def write_operator_block(x, parameters, precision, taxa):
                         name = 'CP' + str(partition) + '.'
 
                     for i in range(len(rates)):
-                        write_deltaexchange_block(tmp, name+"gtr."+rates[i], delta="0.01", weight="1")
+                        write_deltaexchange_block(tmp, name + "gtr." + rates[i], delta="0.01", weight="1")
                 write_deltaexchange_block(tmp, 'allMus', delta='0.01', parameter_weights="568 568 568", weight="3")
             write_deltaexchange_block(tmp, parameter_name='frequencies', delta='0.01', weight='1')
 
@@ -290,9 +291,10 @@ def write_operator_block(x, parameters, precision, taxa):
 
         # Uncorrelated lognormal relaxed clock
         if parameters.clock_model == 'ucld':
-            write_scaleoperator_block(tmp,"ucld.mean", scale_factor='0.75', weight='3')
+            write_scaleoperator_block(tmp, "ucld.mean", scale_factor='0.75', weight='3')
             write_scaleoperator_block(tmp, "ucld.stdev", scale_factor='0.75', weight='3')
-            write_updownoperator_block(tmp, "treeModel.allInternalNodeHeights", "ucld.mean", scale_factor='0.75', weight='3')
+            write_updownoperator_block(tmp, "treeModel.allInternalNodeHeights", "ucld.mean", scale_factor='0.75',
+                                       weight='3')
             write_swapoperator_block(tmp, "branchRates.categories", size='1', weight='10', auto_optimize='false')
             write_uniformintegeroperator_block(tmp, "branchRates.categories", weight='10')
 
@@ -318,10 +320,10 @@ def write_operator_block(x, parameters, precision, taxa):
             write_gmrfupdateroperator_block(tmp, scale_factor="1.0", weight="2")
             write_scaleoperator_block(tmp, 'skygrid.precision', scale_factor='0.75', weight='1')
 
-    # Precision sampling for tip-dates
+        # Precision sampling for tip-dates
         if precision:
-            [write_uniformoperator_block(tmp, 'age('+taxa[i]+')', weight='1') for i, z in enumerate(precision) if z > 0]
-
+            [write_uniformoperator_block(tmp, 'age(' + taxa[i] + ')', weight='1') for i, z in enumerate(precision) if
+             z > 0]
 
     # Traits go here
     if parameters.continuous_phylogeo:
@@ -333,5 +335,3 @@ def write_operator_block(x, parameters, precision, taxa):
         etree.SubElement(tmp, 'empiricalTreeDistributionModel', idref='treeModel')
 
     return x
-
-
