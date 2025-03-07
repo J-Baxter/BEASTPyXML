@@ -64,7 +64,7 @@ def main():
         if args.clock_model == 'ucld':
             test = write_relaxedclock_block(test, args)
 
-        elif args.clock_modle == 'strict':
+        elif args.clock_model == 'strict':
             test = write_strictclock_block(test)
 
         # write HKY model
