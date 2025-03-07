@@ -99,6 +99,8 @@ def parse_args():
                             dest='empirical_tree_distribution')
 
     tree_group.add_argument("--empirical-treefile",
+                            dest="empirical_tree_distribution",
+                            required='--empirical-tree-distribution' in sys.argv,
                             help="Treefile containing posterior tree distribution")
 
 
