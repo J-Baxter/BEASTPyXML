@@ -438,12 +438,13 @@ def write_filelog(x, parameters, precision, taxa):
 def write_treelog(x, parameters):
     tmp = etree.SubElement(x, 'logTree', id="treeFileLog", logEvery=parameters.log_every ,nexusFormat="true", fileName=parameters.file_stem + '.trees', sortTranslationTable="true")
     etree.SubElement(tmp, 'treeModel', idref='treeModel')
-    tmp2=etree.SubElement(tmp, 'trait', name='rate', tag='rate')
 
-    if parameters.clock_model == 'ucld':
-        etree.SubElement(tmp2, 'discretizedBranchRates', idref='branchRates')
-    if parameters.clock_model == 'strict':
-        etree.SubElement(tmp2, 'strictClockBranchRates', idref="branchRates")
+    if not parameters.empirical_tree_distribution:
+        tmp2 = etree.SubElement(tmp, 'trait', name='rate', tag='rate')
+        if parameters.clock_model == 'ucld':
+            etree.SubElement(tmp2, 'discretizedBranchRates', idref='branchRates')
+        if parameters.clock_model == 'strict':
+            etree.SubElement(tmp2, 'strictClockBranchRates', idref="branchRates")
 
     etree.SubElement(tmp, 'joint', idref='joint')
 
