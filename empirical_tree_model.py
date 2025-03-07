@@ -5,7 +5,7 @@ def write_empirical_tree_model(x, parameters):
     tmp = etree.SubElement(x,
                            'empiricalTreeDistributionModel',
                            id='treeModel',
-                           filename=parameters.empirical_tree_distribution)
+                           fileName=parameters.empirical_tree_distribution)
     etree.SubElement(tmp,
                      'taxa',
                      idref='taxa')
