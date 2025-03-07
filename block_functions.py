@@ -155,14 +155,14 @@ def write_treeprior_block(x, treeprior):
     etree.SubElement(tmp4, "taxa", idref="taxa")
     tmp5 = etree.SubElement(tmp4, "constantSize")
 
-    if re.match(treeprior, 'constant'):
+    if re.match('constant', treeprior):
         tmp.set('id', "constant")
         tmp3.set('id', "constant.popSize")
         tmp3.set('value', "1.0")
         tmp3.set('lower', "0.0")
         tmp5.set('idref', "constant")
 
-    elif re.match(treeprior, 'skygrid'):
+    elif re.match('skygrid',treeprior):
         tmp.set('id', "initialDemo")
         tmp3.set('id', "initialDemo.popSize")
         tmp3.set('value', "100")
