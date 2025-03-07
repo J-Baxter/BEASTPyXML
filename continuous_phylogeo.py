@@ -1,8 +1,8 @@
 import re
 from lxml import etree
 
-def write_taxon_traits(x, parameters, traits):
-    trait_names = parameters['trait_names']
+def write_taxon_traits(x, traits):
+    trait_names = ['lat', 'lon']
     n_traits = len(trait_names)
 
     for n in range(n_traits):
@@ -92,8 +92,8 @@ def write_cauchyrrwlikelihood_block(x, parameter):
     tmp2 = etree.SubElement(tmp, 'traitParameter')
     etree.SubElement(tmp2, 'parameter', id='leaf.location')
 
-    if parameter['continuous_phylogeo_jitter']:
-        jitter = str(parameter['continuous_phylogeo_jitter'])
+    if parameter.continuous_phylogeo_jitter:
+        jitter = str(parameter.continuous_phylogeo_jitter)
         tmp2 = etree.SubElement(tmp, 'jitter', window=jitter+' '+jitter, duplicatesOnly='true')
         etree.SubElement(tmp2, 'parameter', idref='leaf.location')
 
