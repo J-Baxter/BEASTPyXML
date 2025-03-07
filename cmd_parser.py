@@ -205,6 +205,7 @@ def parse_args():
 
     gen_group.add_argument("--file-stem",
                            dest="file_stem",
+                           required=True,
                            help="File stem for analysis")
 
     args = parser.parse_args()
