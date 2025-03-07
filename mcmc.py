@@ -194,95 +194,96 @@ def write_asr_block(x, parameters):
 def write_prior_block(x, parameters):
     tmp = etree.SubElement(x, 'prior', id='prior')
 
-    # HKY substitution model
-    if parameters.substitution_model == "hky":
-        if not parameters.partitions:
-            write_prior(tmp, 'kappa', parameters.hky_kappa)
-            #write_lognormal_prior(tmp, 'kappa', mu="1.0", sigma="1.25", offset="0.0")
-        else:
-            for partition in parameters.partitions:
-                if isinstance(partition, list):
-                    name = 'CP' + str(partition[0]) + '+' + str(partition[1]) + '.'
-                else:
-                    name = 'CP' + str(partition) + '.'
+    if not parameters.empirical_tree_model:
+        # HKY substitution model
+        if parameters.substitution_model == "hky":
+            if not parameters.partitions:
+                write_prior(tmp, 'kappa', parameters.hky_kappa)
+                #write_lognormal_prior(tmp, 'kappa', mu="1.0", sigma="1.25", offset="0.0")
+            else:
+                for partition in parameters.partitions:
+                    if isinstance(partition, list):
+                        name = 'CP' + str(partition[0]) + '+' + str(partition[1]) + '.'
+                    else:
+                        name = 'CP' + str(partition) + '.'
 
-                #write_lognormal_prior(tmp, name+'kappa', mu="1.0", sigma="1.25", offset="0.0")
-                write_prior(tmp, name+'kappa', parameters.hky_kappa)
-            #write_uniform_prior(tmp, 'allMus', lower='0.0', upper='100.0')
-            write_prior(tmp, 'allMus', parameters.all_mus)
-        #write_uniform_prior(tmp, 'frequencies', lower='0.0', upper='1.0')
+                    #write_lognormal_prior(tmp, name+'kappa', mu="1.0", sigma="1.25", offset="0.0")
+                    write_prior(tmp, name+'kappa', parameters.hky_kappa)
+                #write_uniform_prior(tmp, 'allMus', lower='0.0', upper='100.0')
+                write_prior(tmp, 'allMus', parameters.all_mus)
+            #write_uniform_prior(tmp, 'frequencies', lower='0.0', upper='1.0')
 
 
-    # GTR substitution model
-    if parameters.substitution_model == "gtr":
-        rates = ['AC', 'AG', 'AT', 'CG', 'GT']
-        if not parameters.partitions:
-            for i in range(len(rates)):
-                param = f"gtr_{rates[i].lower()}"
-                write_prior(tmp, 'gtr.'+rates[i], getattr(parameters, param))
-                #write_dirichlet_prior(tmp, "gtr.rates", alpha="1.0", sums_to="6.0")
-        else:
-            for partition in parameters.partitions:
-                if isinstance(partition, list):
-                    name = 'CP' + str(partition[0]) + '+' + str(partition[1]) + '.'
-                else:
-                    name = 'CP' + str(partition) + '.'
-
+        # GTR substitution model
+        if parameters.substitution_model == "gtr":
+            rates = ['AC', 'AG', 'AT', 'CG', 'GT']
+            if not parameters.partitions:
                 for i in range(len(rates)):
                     param = f"gtr_{rates[i].lower()}"
-                    write_prior(tmp, name+  'gtr.' + rates[i], getattr(parameters, param))
+                    write_prior(tmp, 'gtr.'+rates[i], getattr(parameters, param))
+                    #write_dirichlet_prior(tmp, "gtr.rates", alpha="1.0", sums_to="6.0")
+            else:
+                for partition in parameters.partitions:
+                    if isinstance(partition, list):
+                        name = 'CP' + str(partition[0]) + '+' + str(partition[1]) + '.'
+                    else:
+                        name = 'CP' + str(partition) + '.'
 
-                    #write_dirichlet_prior(tmp, name + "gtr.rates", alpha="1.0", sums_to="6.0")
-            write_prior(tmp, 'allMus', parameters.all_mus)
-        #write_dirichlet_prior(tmp, 'frequencies', alpha="1.0", sums_to="1.0")
+                    for i in range(len(rates)):
+                        param = f"gtr_{rates[i].lower()}"
+                        write_prior(tmp, name+  'gtr.' + rates[i], getattr(parameters, param))
 
-    # Base frequencies
-    #write_uniform_prior(tmp, 'frequencies', lower='0.0', upper='1.0')
-    write_dirichlet_prior(tmp, 'frequencies', alpha="1.0", sums_to="1.0")
+                        #write_dirichlet_prior(tmp, name + "gtr.rates", alpha="1.0", sums_to="6.0")
+                write_prior(tmp, 'allMus', parameters.all_mus)
+            #write_dirichlet_prior(tmp, 'frequencies', alpha="1.0", sums_to="1.0")
 
-    # Gamma heterogeneity across sites
-    if parameters.use_gamma:
-        if not parameters.partitions:
-            write_prior(tmp, 'alpha', parameters.gamma_alpha)
-            #write_exponential_prior(tmp, 'alpha', mean="0.5", offset="0.0")
-        else:
-            for partition in parameters.partitions:
-                if isinstance(partition, list):
-                    name = 'CP' + str(partition[0]) + '+' + str(partition[1]) + '.'
-                else:
-                    name = 'CP' + str(partition) + '.'
-                write_prior(tmp,  name+'alpha', parameters.gamma_alpha)
-                #write_exponential_prior(tmp, name+'alpha', mean="0.5", offset="0.0")
+        # Base frequencies
+        #write_uniform_prior(tmp, 'frequencies', lower='0.0', upper='1.0')
+        write_dirichlet_prior(tmp, 'frequencies', alpha="1.0", sums_to="1.0")
 
-    # Uncorrelated lognormal relaxed clock
-    if parameters.clock_model == 'ucld':
-        write_prior(tmp, 'ucld.mean', parameters.ucld_mean)
-        write_prior(tmp, 'ucld.stdev', parameters.ucld_stdev)
+        # Gamma heterogeneity across sites
+        if parameters.use_gamma:
+            if not parameters.partitions:
+                write_prior(tmp, 'alpha', parameters.gamma_alpha)
+                #write_exponential_prior(tmp, 'alpha', mean="0.5", offset="0.0")
+            else:
+                for partition in parameters.partitions:
+                    if isinstance(partition, list):
+                        name = 'CP' + str(partition[0]) + '+' + str(partition[1]) + '.'
+                    else:
+                        name = 'CP' + str(partition) + '.'
+                    write_prior(tmp,  name+'alpha', parameters.gamma_alpha)
+                    #write_exponential_prior(tmp, name+'alpha', mean="0.5", offset="0.0")
 
-
-        #write_lognormal_prior(tmp, 'ucld.mean', mean= parameters['ucld_mean_mean'], stdev= parameters['ucld_mean_stdev'], offset="0.0")
-        #write_exponential_prior(tmp, 'ucld.stdev', mean="0.3333333333333333", offset="0.0")
-        etree.SubElement(tmp, 'discretizedBranchRates', idref="branchRates")
-
-    # Strict clock
-    if parameters.clock_model == 'strict':
-        write_prior(tmp, 'clock.rate', parameters.clock_rate)
-        etree.SubElement(tmp, 'strictClockBranchRates', idref="branchRates")
+        # Uncorrelated lognormal relaxed clock
+        if parameters.clock_model == 'ucld':
+            write_prior(tmp, 'ucld.mean', parameters.ucld_mean)
+            write_prior(tmp, 'ucld.stdev', parameters.ucld_stdev)
 
 
-    # Tree model operators
-    if not parameters.empirical_tree_distribution:
+            #write_lognormal_prior(tmp, 'ucld.mean', mean= parameters['ucld_mean_mean'], stdev= parameters['ucld_mean_stdev'], offset="0.0")
+            #write_exponential_prior(tmp, 'ucld.stdev', mean="0.3333333333333333", offset="0.0")
+            etree.SubElement(tmp, 'discretizedBranchRates', idref="branchRates")
 
-        # Constant population
-        if parameters.tree_model == "constant":
-            etree.SubElement(tmp, 'coalescentLikelihood', idref="coalescent")
-            #write_oneonx_prior(tmp, "constant.popSize")
-            write_prior(tmp, "constant.popSize", parameters.constant_population)
+        # Strict clock
+        if parameters.clock_model == 'strict':
+            write_prior(tmp, 'clock.rate', parameters.clock_rate)
+            etree.SubElement(tmp, 'strictClockBranchRates', idref="branchRates")
 
-        # Non parameteric skygrid
-        if parameters.tree_model == "skygrid":
-            write_gamma_prior(tmp, 'skygrid.precision', shape="0.001", scale="1000.0", offset="0.0")
-            etree.SubElement(tmp, 'gmrfSkyGridLikelihood', idref="skygrid")
+
+        # Tree model operators
+        if not parameters.empirical_tree_distribution:
+
+            # Constant population
+            if parameters.tree_model == "constant":
+                etree.SubElement(tmp, 'coalescentLikelihood', idref="coalescent")
+                #write_oneonx_prior(tmp, "constant.popSize")
+                write_prior(tmp, "constant.popSize", parameters.constant_population)
+
+            # Non parameteric skygrid
+            if parameters.tree_model == "skygrid":
+                write_gamma_prior(tmp, 'skygrid.precision', shape="0.001", scale="1000.0", offset="0.0")
+                etree.SubElement(tmp, 'gmrfSkyGridLikelihood', idref="skygrid")
 
     # Traits go here
     if parameters.continuous_phylogeo:
@@ -293,7 +294,9 @@ def write_prior_block(x, parameters):
 
 def write_likelihood(x, parameters):
     tmp = etree.SubElement(x, 'likelihood', id='likelihood')
-    etree.SubElement(tmp, 'treeDataLikelihood', idref='treeLikelihood')
+
+    if not parameters.empirical_tree_model:
+        etree.SubElement(tmp, 'treeDataLikelihood', idref='treeLikelihood')
 
     if parameters.continuous_phylogeo:
         etree.SubElement(tmp, 'multivariateTraitLikelihood', idref="location.traitLikelihood")
@@ -310,13 +313,15 @@ def write_screenlog(x, parameters):
     write_column(tmp,'Joint', 'joint')
     write_column(tmp, 'Prior', 'prior')
     write_column(tmp, 'Likelihood', 'likelihood')
-    write_column(tmp, 'age(root)', 'tmrcaStatistic')
 
-    if parameters.clock_model == 'ucld':
-        write_column(tmp, 'ucld.mean', 'parameter')
+    if not parameters.empirical_tree_model:
+        write_column(tmp, 'age(root)', 'tmrcaStatistic')
 
-    elif parameters.clock_model == 'strict':
-        write_column(tmp, 'clock.rate', 'parameter')
+        if parameters.clock_model == 'ucld':
+            write_column(tmp, 'ucld.mean', 'parameter')
+
+        elif parameters.clock_model == 'strict':
+            write_column(tmp, 'clock.rate', 'parameter')
 
     return x
 
@@ -326,11 +331,11 @@ def write_filelog(x, parameters, precision, taxa):
     etree.SubElement(tmp, 'joint', idref='joint')
     etree.SubElement(tmp, 'prior', idref='prior')
     etree.SubElement(tmp, 'likelihood', idref='likelihood')
-    etree.SubElement(tmp, 'parameter', idref='treeModel.rootHeight')
-    etree.SubElement(tmp, 'tmrcaStatistic', idref='age(root)')
-    etree.SubElement(tmp, 'treeLengthStatistic', idref='treeLength')
 
-    if not parameters.empirical_tree_distribution:
+    if not parameters.empirical_tree_model:
+        etree.SubElement(tmp, 'parameter', idref='treeModel.rootHeight')
+        etree.SubElement(tmp, 'tmrcaStatistic', idref='age(root)')
+        etree.SubElement(tmp, 'treeLengthStatistic', idref='treeLength')
 
         # Constant population
         if parameters.tree_model == "constant":
@@ -343,74 +348,74 @@ def write_filelog(x, parameters, precision, taxa):
             etree.SubElement(tmp, 'parameter', idref="skygrid.cutOff")
 
     # HKY substitution model
-    if parameters.substitution_model == 'hky':
-        if not parameters.partitions:
-            etree.SubElement(tmp, 'parameter', idref="kappa")
-        else:
-            for partition in parameters.partitions:
-                if isinstance(partition, list):
-                    name = 'CP' + str(partition[0]) + '+' + str(partition[1]) + '.'
-                else:
-                    name = 'CP' + str(partition) + '.'
+        if parameters.substitution_model == 'hky':
+            if not parameters.partitions:
+                etree.SubElement(tmp, 'parameter', idref="kappa")
+            else:
+                for partition in parameters.partitions:
+                    if isinstance(partition, list):
+                        name = 'CP' + str(partition[0]) + '+' + str(partition[1]) + '.'
+                    else:
+                        name = 'CP' + str(partition) + '.'
 
-                etree.SubElement(tmp, 'parameter', idref=name+"kappa")
+                    etree.SubElement(tmp, 'parameter', idref=name+"kappa")
 
 
     # GTR substitution model
-    if parameters.substitution_model == 'gtr':
-        rates = ['AC', 'AG', 'AT', 'CG', 'GT']
+        if parameters.substitution_model == 'gtr':
+            rates = ['AC', 'AG', 'AT', 'CG', 'GT']
 
-        if not parameters.partitions:
-            for i in range(len(rates)):
-                etree.SubElement(tmp, 'parameter', idref="gtr."+rates[i])
-        else:
-            for partition in parameters.partitions:
-                if isinstance(partition, list):
-                    name = 'CP' + str(partition[0]) + '+' + str(partition[1]) + '.'
-                else:
-                    name = 'CP' + str(partition) + '.'
-
+            if not parameters.partitions:
                 for i in range(len(rates)):
-                    etree.SubElement(tmp, 'parameter', idref=name + "gtr." + rates[i])
+                    etree.SubElement(tmp, 'parameter', idref="gtr."+rates[i])
+            else:
+                for partition in parameters.partitions:
+                    if isinstance(partition, list):
+                        name = 'CP' + str(partition[0]) + '+' + str(partition[1]) + '.'
+                    else:
+                        name = 'CP' + str(partition) + '.'
+
+                    for i in range(len(rates)):
+                        etree.SubElement(tmp, 'parameter', idref=name + "gtr." + rates[i])
 
 
-    # Base frequencies
-    etree.SubElement(tmp, 'parameter', idref="frequencies")
+        # Base frequencies
+        etree.SubElement(tmp, 'parameter', idref="frequencies")
 
-    if parameters.partitions:
-        etree.SubElement(tmp, 'compoundParameter', idref="allMus")
+        if parameters.partitions:
+            etree.SubElement(tmp, 'compoundParameter', idref="allMus")
 
     # Gamma heterogeneity across sites
-    if parameters.use_gamma:
-        if not parameters.partitions:
-            etree.SubElement(tmp, 'parameter', idref="alpha")
-        else:
-            for partition in parameters.partitions:
-                if isinstance(partition, list):
-                    name = 'CP' + str(partition[0]) + '+' + str(partition[1]) + '.'
-                else:
-                    name = 'CP' + str(partition) + '.'
+        if parameters.use_gamma:
+            if not parameters.partitions:
+                etree.SubElement(tmp, 'parameter', idref="alpha")
+            else:
+                for partition in parameters.partitions:
+                    if isinstance(partition, list):
+                        name = 'CP' + str(partition[0]) + '+' + str(partition[1]) + '.'
+                    else:
+                        name = 'CP' + str(partition) + '.'
 
-                etree.SubElement(tmp, 'parameter', idref=name+"alpha")
+                    etree.SubElement(tmp, 'parameter', idref=name+"alpha")
 
-    # Uncorrelated lognormal relaxed clock
-    if parameters.clock_model == 'ucld':
-        etree.SubElement(tmp, 'parameter', idref="ucld.mean")
-        etree.SubElement(tmp, 'parameter', idref="ucld.stdev")
-        etree.SubElement(tmp, 'discretizedBranchRates', idref="branchRates")
-        etree.SubElement(tmp, 'rateStatistic', idref="meanRate")
-        etree.SubElement(tmp, 'rateStatistic', idref="coefficientOfVariation")
-        etree.SubElement(tmp, 'rateCovarianceStatistic', idref="covariance")
+        # Uncorrelated lognormal relaxed clock
+        if parameters.clock_model == 'ucld':
+            etree.SubElement(tmp, 'parameter', idref="ucld.mean")
+            etree.SubElement(tmp, 'parameter', idref="ucld.stdev")
+            etree.SubElement(tmp, 'discretizedBranchRates', idref="branchRates")
+            etree.SubElement(tmp, 'rateStatistic', idref="meanRate")
+            etree.SubElement(tmp, 'rateStatistic', idref="coefficientOfVariation")
+            etree.SubElement(tmp, 'rateCovarianceStatistic', idref="covariance")
 
-    # Strict clock
-    if parameters.clock_model == 'strict':
-        etree.SubElement(tmp, 'rateStatistic', idref="meanRate")
-        etree.SubElement(tmp, 'parameter', idref="clock.rate")
-        etree.SubElement(tmp, 'strictClockBranchRates', idref="branchRates")
+        # Strict clock
+        if parameters.clock_model == 'strict':
+            etree.SubElement(tmp, 'rateStatistic', idref="meanRate")
+            etree.SubElement(tmp, 'parameter', idref="clock.rate")
+            etree.SubElement(tmp, 'strictClockBranchRates', idref="branchRates")
 
-    # Precision sampling for tip-dates
-    if precision:
-        [etree.SubElement(tmp, 'parameter', idref='age(' + taxa[i] + ')') for i, z in enumerate(precision) if z > 0]
+        # Precision sampling for tip-dates
+        if precision:
+            [etree.SubElement(tmp, 'parameter', idref='age(' + taxa[i] + ')') for i, z in enumerate(precision) if z > 0]
 
     # Continuous Phylogeography
     if parameters.continuous_phylogeo:
