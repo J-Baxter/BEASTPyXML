@@ -1,4 +1,5 @@
 import argparse
+import sys
 
 # Format partition
 def parse_partition(value):
@@ -42,6 +43,7 @@ def parse_args():
     seq_group = parser.add_argument_group('Sequence options')
     seq_group.add_argument("--fasta",
                            dest="fasta",
+                           required=True,
                            help="The fasta file for analysis")
 
     seq_group.add_argument("--codon-partitioning",
@@ -92,15 +94,15 @@ def parse_args():
                             help="Number of parameters",
                             dest="skygrid_grids")
 
-    tree_group.add_argument("--empirical-tree-distribution",
+    tree_group.add_argument("--empirical-tree-model",
                             help="Flag to run an empirical tree distribution model",
                             default=False,
                             action="store_true",
-                            dest='empirical_tree_distribution')
+                            dest='empirical_tree_model')
 
-    tree_group.add_argument("--empirical-treefile",
+    tree_group.add_argument("--empirical-tree-distribution",
                             dest="empirical_tree_distribution",
-                            required='--empirical-tree-distribution' in sys.argv,
+                            required='--empirical-tree-model' in sys.argv,
                             help="Treefile containing posterior tree distribution")
 
 
@@ -109,7 +111,7 @@ def parse_args():
     prior_group.add_argument("--ucld-mean",  # change to start values (check this is correct)!!!
                              dest="ucld_mean",
                              default='lognormal,0.001,0.001,true',
-                             help="Specify the prior distribution for uncorrelated lognormal relaxed clock mean")
+                             help="Specify the prior distribution for uncorrelated lognormal relaxed clock mean. See ReadMe for details of how to declare prior distributions.")
 
     prior_group.add_argument("--ucld-stdev",
                              dest="ucld_stdev",
@@ -181,6 +183,7 @@ def parse_args():
 
     trait_group.add_argument("--continuous-phylogeo-coords",
                              dest="continuous_trait_file",
+                             required='--continuous-phylogeo' in sys.argv,
                              help="Comma delimited file with headers 'taxon,lat,lon' for continuous phylogeographic analysis")
 
     trait_group.add_argument("--continuous-phylogeo-jitter",
