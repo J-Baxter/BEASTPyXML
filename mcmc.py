@@ -163,9 +163,11 @@ def write_dirichlet_prior(x, parameter_name, **kwargs):
     return x
 
 def write_asr_block(x, parameters):
-    possible_traits = {key: parameters.get(key) for key in ['continuous_phylogeo', 'asr_sequence', 'dta']}
+
+    possible_traits = {key: vars(parameters).get(key) for key in ['continuous_phylogeo', 'asr_sequence', 'dta']}
 
     traits_to_reconstruct = {key: value for (key, value) in possible_traits.items() if value is not None}
+    #traits_to_reconstruct = {key: value for key, value in vars(parameters).items() if value is not None and value is not False}
 
     for key,value in traits_to_reconstruct.items():
         if key == 'continuous_phylogeo':
