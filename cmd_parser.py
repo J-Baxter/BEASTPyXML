@@ -15,23 +15,23 @@ def parse_partition(value):
     else:
         return [int(x) for x in parts]
 
-def parse_substitutionmodel(parameters):
-    parameters.substitution_model = None
-    parameters.use_gamma = None
+#def parse_substitutionmodel(parameters):
+    #parameters.substitution_model = None
+    #parameters.use_gamma = None
 
-    if parameters.model:
-        sub_model, heterogeneity = (parameters.model.split('+', 1) + [""])[:2]
+   # if parameters.model:
+        #sub_model, heterogeneity = (parameters.model.split('+', 1) + [""])[:2]
 
-        parameters.substitution_model = sub_model.tolower()
-        parameters.use_gamma = bool(re.search('g\\d{0,1}', heterogeneity))
+       #parameters.substitution_model = sub_model.tolower()
+        #parameters.use_gamma = bool(re.search('g\\d{0,1}', heterogeneity))
        # parameters.use_invariant_sites = bool(re.search('i', heterogeneity))
         # parameters.use_invariant_sites = [True for x in heterogeneity if re.search('^i', x)][0]
 
-        if parameters.use_gamma and re.search('g\\d', heterogeneity):
-            match = re.search(r'\d', heterogeneity)
-            parameters.gamma_categories = match.group() if match else '4'
+        #if parameters.use_gamma and re.search('g\\d', heterogeneity):
+            #match = re.search(r'\d', heterogeneity)
+            #parameters.gamma_categories = match.group() if match else '4'
 
-    return parameters
+    #return parameters
 
 # "skygrid_populationsize": '32', #integer
 # "skygrid_gridpoints": '31.0',
