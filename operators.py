@@ -239,6 +239,8 @@ def write_precisiongibbs_block(x, **kwargs):
 
 
 def write_operator_block(x, parameters, precision, taxa):
+    comment = etree.Comment('Define Operators')
+    x.insert(1000, comment)
     tmp = etree.SubElement(x, 'operators', id='operators', optimizationSchedule='default')
 
     if not parameters.empirical_tree_model:

@@ -2,6 +2,7 @@ import re
 from datetime import datetime
 from lxml import etree
 from Bio import AlignIO
+from numpy.core.numeric import Infinity
 
 
 # Import fasta
@@ -83,6 +84,8 @@ def format_dates(dates):
 
 # Write basic taxa block
 def write_taxa_block(x, taxa, dates_formatted, precision):
+    comment = etree.Comment(' The list of taxa to be analysed (can also include dates/ages). ')
+    x.insert(1, comment)
     taxa_block = etree.SubElement(x, 'taxa', id='taxa')
     n = len(taxa)
 
@@ -111,6 +114,8 @@ def write_taxa_block(x, taxa, dates_formatted, precision):
 # Write sequence alignments
 def write_alignment_block(x, taxa, sequences):
     aln_block = etree.SubElement(x, 'alignment', id='alignment', dataType='nucleotide')
+    comment = etree.Comment(' The sequence alignment (each sequence refers to a taxon above).   ')
+    x.insert(2, comment)
 
     n = len(taxa)
     for i in range(n):
@@ -128,6 +133,8 @@ def write_patterns_block(x, partition):
         etree.SubElement(tmp2, 'alignment', idref='alignment')
 
     else:
+        comment = etree.Comment('The unique patterns for codon positions ')
+        x.insert(3, comment)
         for p in partition:
             if isinstance(p, list):
                 name = 'CP' + str(p[0]) + '+' + str(p[1])
@@ -149,10 +156,15 @@ def write_patterns_block(x, partition):
 
 # Write tree prior block (where treeprior is a string - currently either 'constant' or 'skygrid')
 def write_treeprior_block(x, treeprior):
+    comment = etree.Comment('This is a simple constant population size coalescent model that is used to generate an initial tree for the chain.')
+    x.insert(1000, comment)
+
     tmp = etree.SubElement(x, 'constantSize', units="years")
     tmp2 = etree.SubElement(tmp, "populationSize")
     tmp3 = etree.SubElement(tmp2, "parameter", id="constant.popSize")
 
+    comment = etree.Comment( 'Generate a random starting tree under the coalescent process')
+    x.insert(1000, comment)
     tmp4 = etree.SubElement(x, 'coalescentSimulator', id="startingTree")
     etree.SubElement(tmp4, "taxa", idref="taxa")
     tmp5 = etree.SubElement(tmp4, "constantSize")
@@ -175,6 +187,8 @@ def write_treeprior_block(x, treeprior):
 
 # write basic tree model block
 def write_treemodel_block(x, taxa, precision):
+    comment = etree.Comment('Generate a tree model')
+    x.insert(1000, comment)
     treemodel_block = etree.SubElement(x, 'treeModel', id='treeModel')
     etree.SubElement(treemodel_block, "coalescentTree", idref="startingTree")
 
@@ -197,6 +211,8 @@ def write_treemodel_block(x, taxa, precision):
 
 
 def write_treelengthstatistic_block(x):
+    comment = etree.Comment('Statistic for sum of the branch lengths of the tree (tree length)')
+    x.insert(1000, comment)
     tmp = etree.SubElement(x, 'treeLengthStatistic', id='treeLength')
     etree.SubElement(tmp, "treeModel", idref="treeModel")
 
@@ -204,6 +220,8 @@ def write_treelengthstatistic_block(x):
 
 
 def write_tmrcastatistic_block(x):
+    comment = etree.Comment('Statistic for time of most recent common ancestor of tree')
+    x.insert(1000, comment)
     tmp = etree.SubElement(x, 'tmrcaStatistic', id="age(root)", absolute="true")
     etree.SubElement(tmp, "treeModel", idref="treeModel")
 
@@ -223,6 +241,8 @@ def write_coalescentlikelihood_block(x):
 
 # Skygrid Likelihood Block
 def write_skygridlikelihood_block(x, parameters):
+    comment = etree.Comment('Generate a gmrfSkyGridLikelihood for the Bayesian SkyGrid process')
+    x.insert(1000, comment)
     # Extract parameters
     sg_popsize = parameters.skygrid_grids
     sg_gridpoints = str(float(parameters.skygrid_grids) + 1)
@@ -249,6 +269,8 @@ def write_skygridlikelihood_block(x, parameters):
 
 
 def write_relaxedclock_block(x, parameters):
+    comment = etree.Comment('The uncorrelated relaxed clock (Drummond, Ho, Phillips & Rambaut (2006) PLoS Biology 4, e88 )')
+    x.insert(1000, comment)
     ucld_mean = re.split(',', parameters.ucld_mean)[1]
     ucld_stdev = re.split(',', parameters.ucld_stdev)[1]
 
@@ -285,6 +307,9 @@ def write_relaxedclock_block(x, parameters):
 
 
 def write_strictclock_block(x):
+    comment = etree.Comment('The strict clock(Uniform rates across branches)')
+    x.insert(1000, comment)
+
     tmp = etree.SubElement(x, 'strictClockBranchRates', id="branchRates")
     tmp2 = etree.SubElement(tmp, 'rate')
     etree.SubElement(tmp2, "parameter", id='clock.rate', value='1.0')
@@ -309,7 +334,8 @@ def write_hky_block(x, partition):
             name = 'CP' + str(partition[0]) + '+' + str(partition[1]) + '.'
         else:
             name = 'CP' + str(partition) + '.'
-
+    comment = etree.Comment('The HKY substitution model (Hasegawa, Kishino & Yano, 1985) ')
+    x.insert(1000, comment)
     tmp = etree.SubElement(x, 'HKYModel', id=name + 'hky')
 
     # Frequency block
@@ -390,6 +416,8 @@ def write_site_block(x, partition, parameters):
     use_gamma = parameters.use_gamma
     gamma_categories = parameters.gamma_categories
     # gamma_alpha = parameters["gamma_alpha"]
+    comment = etree.Comment('site model')
+    x.insert(1000, comment)
 
     if not partition:
         name = ''
@@ -430,6 +458,9 @@ def write_compound_block(x, parameters):
     tmp = etree.SubElement(x, 'compoundParameter', id='allMus')
     partitions = parameters.partitions
 
+    comment = etree.Comment('Collecting together relative rates for partitions ')
+    x.insert(1000, comment)
+
     for partition in partitions:
         if isinstance(partition, list):
             name = 'CP' + str(partition[0]) + '+' + str(partition[1]) + '.'
@@ -446,6 +477,9 @@ def write_compound_block(x, parameters):
 def write_treedatalikelihood_block(x, parameters):
     partitions = parameters.partitions
     clock_model = parameters.clock_model
+
+    comment = etree.Comment('Likelihood for tree given sequence data ')
+    x.insert(1000, comment)
 
     tmp = etree.SubElement(x, 'treeDataLikelihood', id='treeLikelihood', useAmbiguities="false")
 

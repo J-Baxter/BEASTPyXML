@@ -306,6 +306,8 @@ def write_column(x, label, element):
 
 
 def write_screenlog(x, parameters):
+    comment = etree.Comment('write log to screen ')
+    x.insert(1000, comment)
     tmp = etree.SubElement(x, 'log', id='screenlog', logEvery=parameters.log_every)
     write_column(tmp, 'Joint', 'joint')
     write_column(tmp, 'Prior', 'prior')
@@ -324,6 +326,8 @@ def write_screenlog(x, parameters):
 
 
 def write_filelog(x, parameters, precision, taxa):
+    comment = etree.Comment('write log to file ')
+    x.insert(1000, comment)
     tmp = etree.SubElement(x, 'log', id='fileLog', logEvery=parameters.log_every,
                            fileName=parameters.file_stem + '.log', overwrite='false')
     etree.SubElement(tmp, 'joint', idref='joint')
@@ -437,6 +441,8 @@ def write_filelog(x, parameters, precision, taxa):
 
 
 def write_treelog(x, parameters):
+    comment = etree.Comment('write tree log to file ')
+    x.insert(1000, comment)
     tmp = etree.SubElement(x, 'logTree', id="treeFileLog", logEvery=parameters.log_every, nexusFormat="true",
                            fileName=parameters.file_stem + '.trees', sortTranslationTable="true")
     etree.SubElement(tmp, 'treeModel', idref='treeModel')
@@ -463,6 +469,8 @@ def write_treelog(x, parameters):
 
 
 def write_mcmc(x, parameters, precision, taxa):
+    comment = etree.Comment('Define MCMC')
+    x.insert(1000, comment)
     tmp = etree.SubElement(x, 'mcmc', id='mcmc', chainLength=parameters.chain_length, autoOptimize="true",
                            operatorAnalysis=parameters.file_stem + '.ops')
 

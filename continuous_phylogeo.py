@@ -28,6 +28,9 @@ def write_taxon_traits(x, traits):
         for key, value in traits.items():
             taxon = x.find(f".//taxon[@id='{key}']")
 
+            comment = etree.Comment('START Multivariate diffusion model')
+            taxon.insert(4, comment)
+
             if all(v is not None for v in [taxon, value[lat], value[lon]]):
                 joint_attribute = etree.SubElement(taxon, 'attr', name='location')
                 joint_attribute.text = str(value[lat] + ' ' + value[lon])
@@ -36,10 +39,15 @@ def write_taxon_traits(x, traits):
                 joint_attribute = etree.SubElement(taxon, 'attr', name='location')
                 joint_attribute.text = 'NA NA'
 
+            comment = etree.Comment('END Multivariate diffusion model')
+            taxon.insert(5, comment)
+
     return x
 
 
 def write_multivariatemodel_block(x):
+    comment = etree.Comment('START Multivariate diffusion model')
+    x.insert(1000, comment)
     tmp = etree.SubElement(x, 'multivariateDiffusionModel', id='location.diffusionModel')
     tmp2 = etree.SubElement(tmp, 'precisionMatrix')
     tmp3 = etree.SubElement(tmp2, 'matrixParameter', id="location.precision")
@@ -54,11 +62,15 @@ def write_multivariatemodel_block(x):
 
     tmp2 = etree.SubElement(tmp, 'data')
     etree.SubElement(tmp2, 'parameter', idref='location.precision')
+    comment = etree.Comment('END Multivariate diffusion model')
+    x.insert(1000, comment)
 
     return x
 
 
 def write_cauchyrrw_block(x):
+    comment = etree.Comment('START Multivariate diffusion model')
+    x.insert(1000, comment)
     tmp = etree.SubElement(x, 'arbitraryBranchRates', id='location.diffusion.branchRates')
     etree.SubElement(tmp, "treeModel", idref="treeModel")
     tmp2 = etree.SubElement(tmp, 'rates')
@@ -72,11 +84,15 @@ def write_cauchyrrw_block(x):
     tmp3 = etree.SubElement(tmp2, 'onePGammaDistributionModel')
     tmp4 = etree.SubElement(tmp3, 'shape')
     etree.SubElement(tmp4, 'parameter', value='0.5')
+    comment = etree.Comment('END Multivariate diffusion model')
+    x.insert(1000, comment)
 
     return x
 
 
 def write_cauchyrrwlikelihood_block(x, parameter):
+    comment = etree.Comment('START Multivariate diffusion model')
+    x.insert(1000, comment)
     tmp = etree.SubElement(x, 'multivariateTraitLikelihood', id='location.traitLikelihood', traitName='location',
                            useTreeLength='true', scaleByTime='true', reportAsMultivariate='true', reciprocalRates='true',
                            integrateInternalTraits='true')
@@ -100,11 +116,15 @@ def write_cauchyrrwlikelihood_block(x, parameter):
     etree.SubElement(tmp3, 'parameter', value="0.000001")
 
     etree.SubElement(tmp, 'arbitraryBranchRates', idref="location.diffusion.branchRates")
+    comment = etree.Comment('END Multivariate diffusion model')
+    x.insert(1000, comment)
 
     return x
 
 
 def write_multivariatestats_block(x):
+    comment = etree.Comment('START Multivariate diffusion model')
+    x.insert(1000, comment)
     tmp = etree.SubElement(x, 'correlation', id='location.correlation', dimension1='1', dimension2='2')
     etree.SubElement(tmp, "matrixParameter", idref="location.precision")
 
@@ -113,5 +133,7 @@ def write_multivariatestats_block(x):
 
     tmp = etree.SubElement(x, 'continuousDiffusionStatistic', id="location.diffusionRate", greatCircleDistance="true")
     etree.SubElement(tmp, "matrixParameter", idref="location.traitLikelihood")
+    comment = etree.Comment('END Multivariate diffusion model')
+    x.insert(1000, comment)
 
     return x

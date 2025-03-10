@@ -115,7 +115,7 @@ def main():
     test = write_report(test)
 
     # Save to file
-    xml_string = etree.tostring(test, pretty_print=True, encoding="utf-8", xml_declaration=True,
+    xml_string = etree.tostring(test, pretty_print=True, encoding="utf-8", xml_declaration=True, method="xml",
                                 standalone="yes").decode()
     with open(args.file_stem + ".xml", "w", encoding="utf-8") as f:
         f.write(xml_string)
