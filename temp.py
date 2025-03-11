@@ -16,7 +16,7 @@ def main():
     if args.continuous_phylogeo:
         with open(args.continuous_trait_file, mode="r", encoding="utf-8") as file:
             reader = DictReader(file)  # Automatically maps headers to values
-            latlon = {row["taxon"]: [str(row["lat"]), str(row["lon"])] for row in reader}
+            latlon = {row["taxon"]: [str(row["lat"]), str(row["long"])] for row in reader}
 
     # Make base root of XML
     root = etree.Element('beast', version='1.0')

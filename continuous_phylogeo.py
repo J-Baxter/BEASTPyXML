@@ -2,7 +2,7 @@ import re
 from lxml import etree
 
 def write_taxon_traits(x, traits):
-    trait_names = ['lat', 'lon']
+    trait_names = ['lat', 'long']
     n_traits = len(trait_names)
 
     for n in range(n_traits):
@@ -19,11 +19,11 @@ def write_taxon_traits(x, traits):
                 else:
                     attribute.text = "NA"
 
-    coords = [i for i, name in enumerate(trait_names) if re.search('lat|lon', name)]
+    coords = [i for i, name in enumerate(trait_names) if re.search('lat|long', name)]
 
     if len(coords) == 2:
         lat = next((i for i, name in enumerate(trait_names) if re.search('lat', name)), None)
-        lon = next((i for i, name in enumerate(trait_names) if re.search('lon', name)), None)
+        lon = next((i for i, name in enumerate(trait_names) if re.search('long', name)), None)
 
         for key, value in traits.items():
             taxon = x.find(f".//taxon[@id='{key}']")
