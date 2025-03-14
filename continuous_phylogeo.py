@@ -68,7 +68,7 @@ def write_multivariatemodel_block(x):
     return x
 
 
-def write_cauchyrrw_block(x):
+def write_gammarrw_block(x):
     comment = etree.Comment('START Multivariate diffusion model')
     x.insert(1000, comment)
     tmp = etree.SubElement(x, 'arbitraryBranchRates', id='location.diffusion.branchRates')
@@ -83,14 +83,14 @@ def write_cauchyrrw_block(x):
     tmp2 = etree.SubElement(tmp, 'distribution')
     tmp3 = etree.SubElement(tmp2, 'onePGammaDistributionModel')
     tmp4 = etree.SubElement(tmp3, 'shape')
-    etree.SubElement(tmp4, 'parameter', value='0.5')
+    etree.SubElement(tmp4, 'parameter', id="location.halfDF", value='0.5')
     comment = etree.Comment('END Multivariate diffusion model')
     x.insert(1000, comment)
 
     return x
 
 
-def write_cauchyrrwlikelihood_block(x, parameter):
+def write_gammarrwlikelihood_block(x, parameter):
     comment = etree.Comment('START Multivariate diffusion model')
     x.insert(1000, comment)
     tmp = etree.SubElement(x, 'multivariateTraitLikelihood', id='location.traitLikelihood', traitName='location',

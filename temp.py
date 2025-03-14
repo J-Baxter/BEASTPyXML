@@ -101,8 +101,8 @@ def main():
         test = write_treedatalikelihood_block(test, args)
 
     if args.continuous_phylogeo:
-        test = write_cauchyrrw_block(test)
-        test = write_cauchyrrwlikelihood_block(test, args)
+        test = write_gammarrw_block(test)
+        test = write_gammarrwlikelihood_block(test, args)
         test = write_multivariatestats_block(test)
 
     # Operators

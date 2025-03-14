@@ -281,6 +281,7 @@ def write_prior_block(x, parameters):
 
     # Traits go here
     if parameters.continuous_phylogeo:
+        write_exponential_prior(tmp, 'location.halfDF', mean='10.0', offset='0.0')
         etree.SubElement(tmp, 'distributionLikelihood', idref="location.diffusion.prior")
         etree.SubElement(tmp, 'multivariateWishartPrior', idref="location.precisionPrior")
 
@@ -423,6 +424,7 @@ def write_filelog(x, parameters, precision, taxa):
         etree.SubElement(tmp, 'correlation', idref="location.correlation")
         etree.SubElement(tmp, 'matrixInverse', idref="location.varCovar")
         etree.SubElement(tmp, 'continuousDiffusionStatistic', idref="location.diffusionRate")
+        etree.SubElement(tmp, 'parameter', idref="location.halfDF")
         etree.SubElement(tmp, 'multivariateTraitLikelihood', idref="location.traitLikelihood")
 
     # Tree model operators
