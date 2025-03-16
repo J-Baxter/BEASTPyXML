@@ -2,6 +2,14 @@ import re
 from lxml import etree
 
 
+def clean_attrib(attrib):
+    if isinstance(attrib, dict):
+        cleaned_attrib = {key: value for (key, value) in attrib.items() if value is not None}
+    else:
+        cleaned_attrib = None
+    return cleaned_attrib
+
+
 def write_prior(x, parameter_name, prior_string):
     dist, params = re.split(',', prior_string, 1)
     params = params.split(',')
@@ -66,7 +74,8 @@ def write_lognormal_prior(x, parameter_name, **kwargs):
                   "stdev": stdev}
 
     # Filter out missing arguments
-    clean_attributes = {key: value for (key, value) in attributes.items() if value is not None}
+    #{key: value for (key, value) in attributes.items() if value is not None}
+    clean_attributes = clean_attrib(attributes)
 
     # Write Attribute
     tmp = etree.SubElement(x, 'logNormalPrior', clean_attributes)
@@ -84,7 +93,8 @@ def write_uniform_prior(x, parameter_name, **kwargs):
                   "upper": upper}
 
     # Filter out missing arguments
-    clean_attributes = {key: value for (key, value) in attributes.items() if value is not None}
+    # {key: value for (key, value) in attributes.items() if value is not None}
+    clean_attributes = clean_attrib(attributes)
 
     # Write Attribute
     tmp = etree.SubElement(x, 'uniformPrior', clean_attributes)
@@ -104,7 +114,8 @@ def write_exponential_prior(x, parameter_name, **kwargs):
                   "mean": mean}
 
     # Filter out missing arguments
-    clean_attributes = {key: value for (key, value) in attributes.items() if value is not None}
+    # {key: value for (key, value) in attributes.items() if value is not None}
+    clean_attributes = clean_attrib(attributes)
 
     # Write Attribute
     tmp = etree.SubElement(x, 'exponentialPrior', clean_attributes)
@@ -132,7 +143,8 @@ def write_gamma_prior(x, parameter_name, **kwargs):
                   "shape": shape}
 
     # Filter out missing arguments
-    clean_attributes = {key: value for (key, value) in attributes.items() if value is not None}
+    # {key: value for (key, value) in attributes.items() if value is not None}
+    clean_attributes = clean_attrib(attributes)
 
     # Write Attribute
     tmp = etree.SubElement(x, 'gammaPrior', clean_attributes)
@@ -151,7 +163,8 @@ def write_dirichlet_prior(x, parameter_name, **kwargs):
                   "counts": counts}
 
     # Filter out missing arguments
-    clean_attributes = {key: value for (key, value) in attributes.items() if value is not None}
+    # {key: value for (key, value) in attributes.items() if value is not None}
+    clean_attributes = clean_attrib(attributes)
 
     # Write Attribute
     tmp = etree.SubElement(x, 'dirichletPrior', clean_attributes)
