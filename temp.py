@@ -41,7 +41,7 @@ def main():
     if args.asymmetric_dta:
 
     if args.continuous_phylogeo:
-        test = write_taxon_traits(test, latlon)
+        test = write_taxon_cpg(test, latlon)
 
     # write patterns block
     if not args.empirical_tree_model:

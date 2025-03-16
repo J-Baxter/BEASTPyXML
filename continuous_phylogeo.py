@@ -1,7 +1,7 @@
 import re
 from lxml import etree
 
-def write_taxon_traits(x, traits):
+def write_taxon_cpg(x, traits):
     trait_names = ['lat', 'long']
     n_traits = len(trait_names)
 
