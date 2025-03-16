@@ -193,7 +193,29 @@ def parse_args():
                              help='Specify the prior distribution for coalescent population size parameter')
 
     # Traits
+    # DTA
     trait_group = parser.add_argument_group("Trait Options")
+    trait_group.add_argument("--symmetric-dta",
+                             action="store_true",
+                             dest="symmetric_dta",
+                             help="Flag to inlude a discrete trait analysis, assuming symmetrical transition probabilities")
+
+    trait_group.add_argument("--symmetric-dta-traits",
+                             dest="symmetric_dta_file",
+                             required='--symmetric-dta' in sys.argv,
+                             help="Comma delimited file with headers 'taxon,trait1,trait2...' for discrete trait analysis")
+
+    trait_group.add_argument("--asymmetric-dta",
+                             action="store_true",
+                             dest="asymmetric_dta",
+                             help="Flag to inlude a discrete trait analysis, assuming asymmetrical transition probabilities")
+
+    trait_group.add_argument("--asymmetric-dta-traits",
+                             dest="asymmetric_dta_file",
+                             required='--asymmetric-dta' in sys.argv,
+                             help="Comma delimited file with headers 'taxon,trait1,trait2...' for discrete trait analysis")
+
+    # Continuous Phylogeo
     trait_group.add_argument("--continuous-phylogeo",
                              action="store_true",
                              dest="continuous_phylogeo",
