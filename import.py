@@ -120,20 +120,6 @@ def write_alignment_block(x, taxa, sequences):
     return x
 
 
-<treeModel id="treeModel">
-		<coalescentTree idref="startingTree"/>
-		<rootHeight>
-			<parameter id="treeModel.rootHeight"/>
-		</rootHeight>
-		<nodeHeights internalNodes="true">
-			<parameter id="treeModel.internalNodeHeights"/>
-		</nodeHeights>
-		<nodeHeights internalNodes="true" rootNode="true">
-			<parameter id="treeModel.allInternalNodeHeights"/>
-		</nodeHeights>
-	</treeModel>
-
-
 def write_treemodel_block(x, taxa, precision, tree_model):
     treemodel_block = etree.SubElement(x, 'treeModel', id='treeModel')
     etree.SubElement(treemodel_block, "rootHeight", idref="startingTree")
@@ -142,14 +128,3 @@ def write_treemodel_block(x, taxa, precision, tree_model):
 
 
     return x
-
-taxa, seq_list = read_fasta('USUV_2025Feb10_alldata_aligned_formatted_noFLI_NFLG.fasta_subsample1.fasta')
-dates = parse_dates(taxa)
-date_decimal, precision = format_dates(dates)
-
-root = etree.Element('beast', version='1.0')
-test_3 = write_taxa_block(root, taxa, date_decimal, precision)
-test_4 = write_alignment_block(test_3, taxa, seq_list)
-xml_string = etree.tostring(test_4, pretty_print=True, encoding="utf-8").decode()
-
-print(xml_string)
