@@ -36,9 +36,9 @@ def main():
     if not args.empirical_tree_model:
         test = write_alignment_block(test, taxa, seq_list)
 
-    if args.symmetric_dta:
+    #if args.symmetric_dta:
 
-    if args.asymmetric_dta:
+    #if args.asymmetric_dta:
 
     if args.continuous_phylogeo:
         test = write_taxon_cpg(test, latlon)
@@ -130,6 +130,3 @@ def main():
         f.write(xml_string)
         f.close()
 
-
-if __name__ == '__main__':
-    main()

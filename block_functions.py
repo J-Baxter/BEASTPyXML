@@ -2,7 +2,6 @@ import re
 from datetime import datetime
 from lxml import etree
 from Bio import AlignIO
-from numpy.core.numeric import Infinity
 
 
 # Import fasta
