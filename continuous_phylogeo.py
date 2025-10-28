@@ -83,7 +83,7 @@ def write_gammarrw_block(x):
     tmp2 = etree.SubElement(tmp, 'distribution')
     tmp3 = etree.SubElement(tmp2, 'onePGammaDistributionModel')
     tmp4 = etree.SubElement(tmp3, 'shape')
-    etree.SubElement(tmp4, 'parameter', id="location.halfDF", value='0.5')
+    etree.SubElement(tmp4, 'parameter', value='0.5')
     comment = etree.Comment('END Multivariate diffusion model')
     x.insert(1000, comment)
 
