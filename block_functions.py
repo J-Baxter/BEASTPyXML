@@ -26,15 +26,15 @@ def read_fasta(filename):
 def parse_dates(taxa):
     dates = []
     for taxon in taxa:
-        match = re.search(r'(\d{4}-\d{2}-\d{2}$)', taxon)
+        match = re.search(r'(\\|\d{4}-\d{2}-\d{2}($|\\|))', taxon)
         if match:
             dates.append(match.group(0))
         else:
-            match = re.search(r'(\d{4}-\d{2}$)', taxon)
+            match = re.search(r'(\\|\d{4}-\d{2}($|\\|))', taxon)
             if match:
                 dates.append(match.group(0))
             else:
-                match = re.search(r'(\d{4}$)', taxon)
+                match = re.search(r'(\\|\d{4}($|\\|))', taxon)
                 if match:
                     dates.append(match.group(0))
                 else:
