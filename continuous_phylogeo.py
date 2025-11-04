@@ -117,7 +117,7 @@ def write_gammarrwlikelihood_block(x, parameter):
     tmp3 = etree.SubElement(tmp2, 'priorSampleSize')
     etree.SubElement(tmp3, 'parameter', value="0.000001")
 
-    etree.SubElement(tmp, 'arbitraryBranchRates', idref="location.diffusion.branchRates")
+    etree.SubElement(tmp, 'discretizedBranchRates', idref="location.diffusionRates")
     comment = etree.Comment('END Multivariate diffusion model')
     x.insert(1000, comment)
 
