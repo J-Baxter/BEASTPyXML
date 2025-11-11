@@ -320,7 +320,7 @@ def write_operator_block(x, parameters, precision, taxa):
         # Non parameteric skygrid
         if parameters.tree_model == "skygrid":
             write_gmrfupdateroperator_block(tmp, scale_factor="1.0", weight="2")
-            write_scaleoperator_block(tmp,'skygrid.precision', scale_factor='0.75', weight='1')
+            write_scaleoperator_block(tmp, 'skygrid.precision', scale_factor='0.75', weight='1')
 
         # Precision sampling for tip-dates
         if precision:
@@ -330,7 +330,7 @@ def write_operator_block(x, parameters, precision, taxa):
     # Traits go here
     if parameters.continuous_phylogeo:
         #write_scaleoperator_block(tmp, "location.halfDF", scale_factor='0.75', weight='1')
-        write_swapoperator_block(tmp, "location.rrwCategories", size='1', weight="30", autoOptimize="false")
+        write_swapoperator_block(tmp, "location.rrwCategories", size=1, weight="30", autoOptimize="false")
         write_uniformintegeroperator_block(tmp, 'location.diffusion.rates', weight='10')
         #write_scaleoperator_block(tmp, 'location.diffusion.rates', scale_factor='0.75', weight='30')
         write_precisiongibbs_block(tmp, weight='2')
