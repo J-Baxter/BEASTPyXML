@@ -297,7 +297,7 @@ def write_operator_block(x, parameters, precision, taxa):
             write_scaleoperator_block(tmp, "ucld.stdev", scale_factor='0.75', weight='3')
             write_updownoperator_block(tmp, "treeModel.allInternalNodeHeights", "ucld.mean", scale_factor='0.75',
                                        weight='3')
-            write_swapoperator_block(tmp, "branchRates.categories", size='1', weight='10', auto_optimize='false')
+            #write_swapoperator_block(tmp, "branchRates.categories", size='1', weight='10', auto_optimize='false')
             write_uniformintegeroperator_block(tmp, "branchRates.categories", weight='10')
 
         # Strict clock
