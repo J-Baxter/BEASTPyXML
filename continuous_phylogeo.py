@@ -19,11 +19,11 @@ def write_taxon_cpg(x, traits):
                 else:
                     attribute.text = "NA"
 
-    coords = [i for i, name in enumerate(trait_names) if re.search('lat|long', name)]
+    coords = [i for i, name in enumerate(trait_names) if re.search('lat|lon', name)]
 
     if len(coords) == 2:
         lat = next((i for i, name in enumerate(trait_names) if re.search('lat', name)), None)
-        lon = next((i for i, name in enumerate(trait_names) if re.search('long', name)), None)
+        lon = next((i for i, name in enumerate(trait_names) if re.search('lon', name)), None)
 
         for key, value in traits.items():
             taxon = x.find(f".//taxon[@id='{key}']")
