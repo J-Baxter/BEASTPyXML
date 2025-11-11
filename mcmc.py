@@ -295,7 +295,7 @@ def write_prior_block(x, parameters):
     # Traits go here
     if parameters.continuous_phylogeo:
         #write_exponential_prior(tmp, 'location.halfDF', mean='10.0', offset='0.0')
-        #etree.SubElement(tmp, 'distributionLikelihood', idref="location.diffusion.prior")
+        etree.SubElement(tmp, 'distributionLikelihood', idref="location.diffusion.prior")
         etree.SubElement(tmp, 'multivariateWishartPrior', idref="location.precisionPrior")
 
     return x
