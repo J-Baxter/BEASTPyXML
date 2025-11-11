@@ -330,8 +330,8 @@ def write_operator_block(x, parameters, precision, taxa):
     # Traits go here
     if parameters.continuous_phylogeo:
         #write_scaleoperator_block(tmp, "location.halfDF", scale_factor='0.75', weight='1')
-        write_swapoperator_block(tmp, "location.rrwCategories", size=1, weight="30", autoOptimize="false")
-        write_uniformintegeroperator_block(tmp, 'location.diffusion.rates', weight='10')
+        write_swapoperator_block("location.rrwCategories", size=1, weight="30", autoOptimize="false")
+        write_uniformintegeroperator_block('location.diffusion.rates', weight='10')
         #write_scaleoperator_block(tmp, 'location.diffusion.rates', scale_factor='0.75', weight='30')
         write_precisiongibbs_block(tmp, weight='2')
 
