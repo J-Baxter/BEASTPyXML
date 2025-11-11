@@ -71,21 +71,19 @@ def write_multivariatemodel_block(x):
 def write_gammarrw_block(x):
     comment = etree.Comment('START Multivariate diffusion model')
     x.insert(1000, comment)
-    tmp = etree.SubElement(x, 'discretizedBranchRates', id='location.diffusionRates')
+    tmp = etree.SubElement(x, 'arbitraryBranchRates', id='location.diffusion.branchRates')
     etree.SubElement(tmp, "treeModel", idref="treeModel")
-    #tmp2 = etree.SubElement(tmp, 'rates')
-    #etree.SubElement(tmp2, 'parameter', id= "location.diffusion.rates" , lower='0.0')
+    tmp2 = etree.SubElement(tmp, 'rates')
+    etree.SubElement(tmp2, 'parameter', id= "location.diffusion.rates" , lower='0.0')
 
-    #tmp = etree.SubElement(x, 'distributionLikelihood', id="location.diffusion.prior")
-    #tmp2 = etree.SubElement(tmp, 'data')
-    #etree.SubElement(tmp2, 'parameter', idref='location.diffusion.rates')
+    tmp = etree.SubElement(x, 'distributionLikelihood', id="location.diffusion.prior")
+    tmp2 = etree.SubElement(tmp, 'data')
+    etree.SubElement(tmp2, 'parameter', idref='location.diffusion.rates')
 
     tmp2 = etree.SubElement(tmp, 'distribution')
     tmp3 = etree.SubElement(tmp2, 'onePGammaDistributionModel')
     tmp4 = etree.SubElement(tmp3, 'shape')
     etree.SubElement(tmp4, 'parameter', value='0.5')
-    tmp5 = etree.SubElement(tmp, "rateCategories")
-    etree.SubElement(tmp5, "parameter", id="location.rrwCategories")
     comment = etree.Comment('END Multivariate diffusion model')
     x.insert(1000, comment)
 
