@@ -478,7 +478,7 @@ def write_treelog(x, parameters):
         etree.SubElement(tmp, 'multivariateDiffusionModel', idref="location.diffusionModel")
         etree.SubElement(tmp, 'multivariateTraitLikelihood', idref="location.traitLikelihood")
         tmp2 = etree.SubElement(tmp, 'trait', tag="location.rate")
-        etree.SubElement(tmp2, 'discretizedBranchRates', idref="location.diffusionRates")
+        etree.SubElement(tmp2, 'arbitraryBranchRates', idref="location.diffusion.branchRates")
 
     return x
 

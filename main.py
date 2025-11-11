@@ -107,7 +107,7 @@ def main():
 
     if not args.empirical_tree_model:
         # Likelihood of tree given sequence data
-        test = write_treelikelihood_block(test, args)
+        test = write_treedatalikelihood_block(test, args)
 
     if args.continuous_phylogeo:
         test = write_gammarrw_block(test)
